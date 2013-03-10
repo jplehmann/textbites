@@ -34,6 +34,33 @@ class TestBooks(unittest.TestCase):
     r1 = Library.get("r1")
     self.assertEqual(r1, r)
 
+  def test_parse_chapter_reference(self):
+    ref = self.bres.reference("Chapter 2")
+    self.assertEquals(ref.pretty(), "Chapter 2")
+
+  def test_parse_chapter_reference_lower(self):
+    ref = self.bres.reference("chapter 2")
+    self.assertEquals(ref.pretty(), "Chapter 2")
+
+  def test_parse_chapter_reference_without_chapter(self):
+    ref = self.bres.reference("2")
+    self.assertEquals(ref.pretty(), "Chapter 2")
+
+  def test_parse_chapter_reference_with_one_line(self):
+    ref = self.bres.reference("2:1")
+    self.assertEquals(ref.pretty(), "Chapter 2:1")
+
+  def test_parse_chapter_reference_with_start_and_end_lines(self):
+    ref = self.bres.reference("2:1-3")
+    self.assertEquals(ref.pretty(), "Chapter 2:1-3")
+
+    """
+      Chapter N:M
+      Chapter N:M-P
+      Chapter N:*-P
+      Chapter N:M-*
+    """
+
   def test_chapter_refs(self):
     chaps = self.bres.chapter_refs()
     self.assertEquals(len(chaps), 3)

@@ -32,6 +32,29 @@ class BookResource(Resource):
     self._author = author
     self._chapters = chapters
 
+  def reference(self, str_ref):
+    """ Parse this string reference and return an object.
+        Chapter N
+        chapter N
+        N
+        Chapter N:M
+        Chapter N:M-P
+        Doesn't support chapter range
+        Doesn't support open ended line ranges
+    """
+    m = re.match("(?:[Cc]hapter ?)?(\d+)(?::(\d+)(?:-(\d+))?)?", str_ref)
+    if m:
+      # TODO: should we do checking?
+      chap = m.group(1)
+      start = m.group(2)
+      if not start:
+        return Chapter(self, int(chap))
+      end = m.group(3)
+      if not end:
+        return Lines(self, int(chap), int(start), int(start))
+      return Lines(self, int(chap), int(start), int(end))
+    raise UnparsableReferenceError()
+
   def top_reference(self):
     """ Produce Book reference.
     """
@@ -207,5 +230,7 @@ class Line(Lines, Reference):
     raise NotImplementedError()
 
 
+class UnparsableReferenceError(Exception):
+  pass
 
 
