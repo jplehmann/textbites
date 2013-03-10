@@ -1,13 +1,8 @@
 #!/usr/bin/env python
-
-import os
-import sys
-
 """
 Like a service locator for book resources.
 As a module to be a singleton.
 """
-
 
 _resources = {}
 
