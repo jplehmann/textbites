@@ -44,28 +44,37 @@ class BookResource(Resource):
       c_refs.append(Chapter(self, i))
     return c_refs
 
+  def chapter_length(self, chapter_num):
+    return len(self._chapters[chapter_num-1])
+
   def chapter_lines_ref(self, chapter_num):
     """ Produce Lines reference.
     """
-    return Lines(self, chapter_num, 1, len(self._chapters[chapter_num-1]))
+    return Lines(self, chapter_num, 1, self.chapter_length(chapter_num))
 
   def chapter_text(self, chapter_num, first_line=None, last_line=None):
     """ Return text from a chapter. If no line numbers are given, it
         returns entire chapter.
     """
     chapter = self._chapters[chapter_num-1]
-    if first_line == None:
-      first_line = 1
-      last_line = len(chapter)
-    return '\n'.join(chapter[first_line-1:last_line-1]).strip()
+    first = first_line-1 if first_line != None else None
+    return '\n'.join(chapter[first:last_line]).strip()
 
-  def search(self, pattern):
+  def search(self, pattern, chapter_first, chapter_last, line_first, line_last):
+    """ Return Line references for search hits within the specified limits.
+        Unspecified boundaries default to open ended. e.g. chapter_last being None
+        means it will search all following chapters.
+    """
+    # test illegal combinations
+    assert chapter_last != None or chapter_first == None
+    assert line_last != None or line_first == None
+    assert chapter_first != None or line_first == None
     results = []
-    for i, chapter in enumerate(self._chapters, 1):
-      for j, line in enumerate(chapter, 1):
+    # okay for bounds to be None; works properly
+    for i, chapter in enumerate(chapters[chapter_first:chapter_last]):
+      for j, line in enumerate(chapter[line_first:line_last], 1):
         if re.search(pattern, line):
-          results.add(i, j)
-    # TODO: create References
+          results.append(Line(self, i, j))
     return results
 
 
@@ -106,8 +115,7 @@ class Book(Reference):
     raise NotImplementedError()
 
   def search(self, pattern):
-    # TODO
-    pass
+    return self._resource.search(pattern)
 
 
 class Chapter(Reference):
@@ -127,34 +135,61 @@ class Chapter(Reference):
     return self._resource.chapter_text(self._chapter_num)
 
   def search(self, pattern):
-    # TODO
-    pass
+    return self_resource.search(
+        pattern, chapter_first=self._chapter_num, 
+        chapter_last=self._chapter_num)
 
 
 class Lines(Reference):
   """ Represents 1 or more contiguous lines.
   """
-  def __init__(self, resource, chapter_num, first, last=None):
-    """ If a single line, then last == first (None okay too)
+  def __init__(self, resource, chapter_num, first, last):
+    """ If a single line, then last == first.
+        None means open ended.
     """
     Reference.__init__(self, resource)
     self._chapter_num = chapter_num
     self._first = first
-    self._last = last if last != None else first
-    assert self._first != None and self._first <= self._last
+    self._last = last
+    assert self._first == None or self._last == None or self._first <= self._last
 
   def children(self):
-    raise NotImplementedError()
+    """ Maybe unnecessary?
+    """
+    # use python slice to handle Nones
+    line_nums = range(1, self._resource.chapter_length(self._chapter_num)+1)
+    first = self._first-1 if self._first != None else None
+    return [Line(self._resource, self._chapter_num, num) 
+        for num in line_nums[first:self._last]]
 
   def pretty(self):
-    s = "Chapter %d:%d" % (self._chapter_num, self._first)
-    return s if self._first == self._last else s + "-%d" % self._last
+    first = self._first if self._first != None else "*"
+    last = self._last if self._last != None else "*"
+    s = "Chapter %d:%s" % (self._chapter_num, first)
+    return s if first == last else s + "-%s" % last
 
   def text(self):
     return self._resource.chapter_text(self._chapter_num, self._first, self._last)
 
   def search(self, pattern):
+    cn = self._chapter_num
+    return self_resource.search(pattern, 
+        chapter_first=cn, chapter_last=cn,
+        line_first=self._first, line_last=self._last)
+
+
+class Line(Lines, Reference):
+  """ Represents 1 line.  Implemented as special case of Lines.
+  """
+  def __init__(self, resource, chapter_num, line_num):
+    assert line_num != None
+    Lines.__init__(self, resource, chapter_num, line_num, line_num)
+
+  def children(self):
+    """ Must raise else will call Lines resulting in loop.
+    """
     raise NotImplementedError()
+
 
 
 

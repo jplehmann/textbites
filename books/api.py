@@ -27,7 +27,7 @@ class Resource:
 
 
 # abstract base class
-class Reference:
+class Reference(object):
   """ Represents some section of text.
   """
   

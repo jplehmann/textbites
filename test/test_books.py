@@ -9,7 +9,7 @@ import os.path
 import json
 
 from books.api import Resource
-from books.books import BookResource, Book, Chapter, Lines
+from books.books import BookResource, Book, Chapter, Lines, Line
 from books import library as Library
 
 
@@ -44,17 +44,27 @@ class TestBooks(unittest.TestCase):
     c3 = chaps[2]
     self.assertIsInstance(c3, Chapter)
     self.assertEquals(c3.pretty(), "Chapter 3")
-    self.assertEquals(len(c3.text()), 687)
+    self.assertEquals(len(c3.text()), 817)
 
     lines = c3.children()
     self.assertIsInstance(lines, Lines)
     self.assertEquals(lines.pretty(), "Chapter 3:1-7")
-    # cannot get children on lines
-    self.assertRaises(NotImplementedError, lines.children)
-    self.assertEquals(len(lines.text()), 687)
+    self.assertEquals(len(lines.text()), 817)
+
+    line_range = lines.children()
+    self.assertEquals(len(line_range), 7)
+    one_line = line_range[-1]
+    self.assertIsInstance(one_line, Line)
+    self.assertEquals(one_line.pretty(), "Chapter 3:7")
+    self.assertEquals(len(one_line.text()), 128)
+
 
     # TODO individual line ranges
+    # adn test open ended ranges
 
+  #def test_book_search(self):
+  #  bres = BookResource.from_json(self.data)
+  #  book.search(
 
   
 if __name__ == "__main__":
