@@ -115,10 +115,6 @@ class TestBooks(unittest.TestCase):
     self.assertEquals(one_line.pretty(), "Chapter 3:7")
     self.assertEquals(len(one_line.text()), 128)
 
-
-    # TODO individual line ranges
-    # adn test open ended ranges
-
   def test_book_search(self):
     book = self.bres.top_reference()
     hits = book.search("daughter")
@@ -150,13 +146,21 @@ class TestBooks(unittest.TestCase):
     self.assertEquals(hits[0].pretty(), "Chapter 1:2")
 
   def test_book_search_line_range(self):
-    pass
+    hits = self.bres.search("Mr\.", first_chapter=2, last_chapter=2, first_line=1, last_line=6)
+    self.assertEquals(len(hits), 3)
+    self.assertEquals(hits[0].pretty(), "Chapter 2:1")
+    self.assertEquals(hits[1].pretty(), "Chapter 2:5")
+    self.assertEquals(hits[2].pretty(), "Chapter 2:6")
 
   def test_book_search_from_line(self):
-    pass
+    hits = self.bres.search("Mr\.", first_chapter=2, last_chapter=2, first_line=2, last_line=6)
+    self.assertEquals(len(hits), 2)
+    self.assertEquals(hits[0].pretty(), "Chapter 2:5")
 
   def test_book_search_to_line(self):
-    pass
+    hits = self.bres.search("Mr\.", first_chapter=2, last_chapter=2, first_line=1, last_line=5)
+    self.assertEquals(len(hits), 2)
+    self.assertEquals(hits[1].pretty(), "Chapter 2:5")
 
 
   
