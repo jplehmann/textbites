@@ -54,13 +54,6 @@ class TestBooks(unittest.TestCase):
     ref = self.bres.reference("2:1-3")
     self.assertEquals(ref.pretty(), "Chapter 2:1-3")
 
-    """
-      Chapter N:M
-      Chapter N:M-P
-      Chapter N:*-P
-      Chapter N:M-*
-    """
-
   def test_chapter_refs(self):
     chaps = self.bres.chapter_refs()
     self.assertEquals(len(chaps), 3)
@@ -146,15 +139,15 @@ class TestBooks(unittest.TestCase):
     self.assertEquals(len(hits), 1)
     self.assertEquals(hits[0].pretty(), "Chapter 3:1")
 
-    # Lines scope
+  def test_book_search_from_chapter_to_end(self):
+    hits = self.bres.search("daughter", first_chapter=2)
+    self.assertEquals(len(hits), 2)
+    self.assertEquals(hits[0].pretty(), "Chapter 2:4")
 
-  def test_book_search_from_chapter(self):
-    # search chapters 2:end
-    pass
-
-  def test_book_search_to_chapter(self):
-    # search chapters beg:2
-    pass
+  def test_book_search_to_chapter_to_end(self):
+    hits = self.bres.search("daughter", last_chapter=2)
+    self.assertEquals(len(hits), 2)
+    self.assertEquals(hits[0].pretty(), "Chapter 1:2")
 
   def test_book_search_line_range(self):
     pass

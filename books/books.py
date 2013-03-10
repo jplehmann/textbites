@@ -90,11 +90,8 @@ class BookResource(Resource):
         Unspecified boundaries default to open ended. e.g. last_chapter being None
         means it will search all following chapters.
     """
-    # test illegal combinations
     #print "chap boundary", first_chapter, last_chapter
-    assert last_chapter != None or first_chapter == None
-    assert last_line != None or first_line == None
-    assert first_chapter != None or first_line == None
+    # test illegal combinations
     results = []
     fl = first_line-1 if first_line != None else None
     fc = first_chapter-1 if first_chapter != None else None
