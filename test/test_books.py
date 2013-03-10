@@ -17,9 +17,14 @@ DATA_FILE = os.path.join(os.path.dirname(__file__), "../data/pp-sample.json")
 
 
 class TestBooks(unittest.TestCase):
-  
+
+  @classmethod
+  def setUpClass(cls): 
+    TestBooks.data = json.load(open(DATA_FILE))
+    print TestBooks.data
+
   def setUp(self):
-    self.data = json.load(open(DATA_FILE))
+    self.bres = BookResource.from_json(TestBooks.data)
 
   def test_library(self):
     r = Resource()
@@ -29,11 +34,43 @@ class TestBooks(unittest.TestCase):
     r1 = Library.get("r1")
     self.assertEqual(r1, r)
 
-  def test_book_resource(self):
-    print self.data
-    bres = BookResource.from_json(self.data)
+  def test_chapter_refs(self):
+    chaps = self.bres.chapter_refs()
+    self.assertEquals(len(chaps), 3)
 
-    book = bres.top_reference()
+  def test_chapter_length(self):
+    chaps = self.bres.chapter_refs()
+    c3 = chaps[2]
+    self.assertEquals(self.bres.chapter_length(c3.num()), 7)
+
+  def test_chapter_text_for_whole_chapter_default(self):
+    chaps = self.bres.chapter_refs()
+    c3 = chaps[2]
+    text = self.bres.chapter_text(c3.num())
+    self.assertEquals(len(text), 817)
+
+  def test_chapter_text_for_whole_chapter_from_one(self):
+    chaps = self.bres.chapter_refs()
+    c3 = chaps[2]
+    text = self.bres.chapter_text(c3.num(), first_line=1)
+    self.assertEquals(len(text), 817)
+
+  def test_chapter_text_for_whole_chapter_to_last(self):
+    chaps = self.bres.chapter_refs()
+    c3 = chaps[2]
+    last = self.bres.chapter_length(c3.num())
+    text = self.bres.chapter_text(c3.num(), last_line=last)
+    self.assertEquals(len(text), 817)
+
+  def test_chapter_text_for_whole_chapter_from_first_to_last(self):
+    chaps = self.bres.chapter_refs()
+    c3 = chaps[2]
+    last = self.bres.chapter_length(c3.num())
+    text = self.bres.chapter_text(c3.num(), first_line=1, last_line=last)
+    self.assertEquals(len(text), 817)
+
+  def test_book_refs(self):
+    book = self.bres.top_reference()
     self.assertIsInstance(book, Book)
     self.assertEquals(book.pretty(), "PRIDE AND PREJUDICE")
     # cannot get text on a book
@@ -46,15 +83,14 @@ class TestBooks(unittest.TestCase):
     self.assertEquals(c3.pretty(), "Chapter 3")
     self.assertEquals(len(c3.text()), 817)
 
-    # TODO rename line above to line range?
     lines = c3.children()
     self.assertIsInstance(lines, Lines)
     self.assertEquals(lines.pretty(), "Chapter 3:1-7")
     self.assertEquals(len(lines.text()), 817)
 
-    line_range = lines.children()
-    self.assertEquals(len(line_range), 7)
-    one_line = line_range[-1]
+    line_array = lines.children()
+    self.assertEquals(len(line_array), 7)
+    one_line = line_array[-1]
     self.assertIsInstance(one_line, Line)
     self.assertEquals(one_line.pretty(), "Chapter 3:7")
     self.assertEquals(len(one_line.text()), 128)
@@ -64,8 +100,7 @@ class TestBooks(unittest.TestCase):
     # adn test open ended ranges
 
   def test_book_search(self):
-    bres = BookResource.from_json(self.data)
-    book = bres.top_reference()
+    book = self.bres.top_reference()
     hits = book.search("daughter")
     self.assertEquals(len(hits), 3)
     self.assertIsInstance(hits[0], Line)
@@ -76,16 +111,33 @@ class TestBooks(unittest.TestCase):
     self.assertTrue(hits[2].text().startswith("Not all that Mrs."))
     self.assertTrue(hits[2].text().endswith("of Mr. Bingley."))
 
-    # TODO put this in a different test
-    # TODO: test searching withing different scopes
-    # chapter scope
+  def test_book_search_one_chapter(self):
+    book = self.bres.top_reference()
     chaps = book.children()
     c3 = chaps[2]
-    chap_hits = c3.search("daughter")
-    self.assertEquals(len(chap_hits), 1)
-    self.assertEquals(chap_hits[0].pretty(), "Chapter 3:1")
+    hits = c3.search("daughter")
+    self.assertEquals(len(hits), 1)
+    self.assertEquals(hits[0].pretty(), "Chapter 3:1")
 
     # Lines scope
+
+  def test_book_search_from_chapter(self):
+    # search chapters 2:end
+    pass
+
+  def test_book_search_to_chapter(self):
+    # search chapters beg:2
+    pass
+
+  def test_book_search_line_range(self):
+    pass
+
+  def test_book_search_from_line(self):
+    pass
+
+  def test_book_search_to_line(self):
+    pass
+
 
   
 if __name__ == "__main__":

@@ -15,7 +15,7 @@ class Resource:
   """ Represents a textual resource which can provide references into it.
   """
 
-  def from_string(self, string_ref):
+  def reference(self, string_ref):
     """ Return an object representation of this string.
     """
     raise NotImplementedError()

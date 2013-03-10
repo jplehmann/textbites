@@ -151,6 +151,9 @@ class Chapter(Reference):
         pattern, first_chapter=self._chapter_num, 
         last_chapter=self._chapter_num)
 
+  def num(self):
+    return self._chapter_num
+
 
 class Lines(Reference):
   """ View of 1 or more contiguous lines.
