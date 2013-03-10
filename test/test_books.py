@@ -37,20 +37,20 @@ class TestBooks(unittest.TestCase):
     self.assertIsInstance(book, Book)
     self.assertEquals(book.pretty(), "PRIDE AND PREJUDICE")
 
-    chaps = book.get_children()
+    chaps = book.children()
     self.assertEquals(len(chaps), 3)
     # assert breaks book.text()
 
     c3 = chaps[2]
     self.assertIsInstance(c3, Chapter)
     self.assertEquals(c3.pretty(), "Chapter 3")
-    self.assertEquals(len(c3.get_text()), 687)
+    self.assertEquals(len(c3.text()), 687)
 
-    lines = c3.get_children()
+    lines = c3.children()
     self.assertIsInstance(lines, Lines)
     self.assertEquals(lines.pretty(), "Chapter 3:1-7")
-    # assert get_children breaks
-    self.assertEquals(len(lines.get_text()), 687)
+    # assert children breaks
+    self.assertEquals(len(lines.text()), 687)
 
     # TODO individual line ranges
 

@@ -95,13 +95,13 @@ class Book(Reference):
   def __init__(self, resource):
     Reference.__init__(self, resource)
 
-  def get_children(self):
+  def children(self):
     return self._resource.chapter_refs()
 
   def pretty(self):
     return self._resource._title
 
-  def get_text(self):
+  def text(self):
     """ Too much text. """
     raise NotImplementedError()
 
@@ -117,13 +117,13 @@ class Chapter(Reference):
     Reference.__init__(self, resource)
     self._chapter_num = chapter_num
 
-  def get_children(self):
+  def children(self):
     return self._resource.chapter_lines_ref(self._chapter_num)
 
   def pretty(self):
     return "Chapter %d" % self._chapter_num
 
-  def get_text(self):
+  def text(self):
     return self._resource.chapter_text(self._chapter_num)
 
   def search(self, pattern):
@@ -143,14 +143,14 @@ class Lines(Reference):
     self._last = last if last != None else first
     assert self._first != None and self._first <= self._last
 
-  def get_children(self):
+  def children(self):
     raise NotImplementedError()
 
   def pretty(self):
     s = "Chapter %d:%d" % (self._chapter_num, self._first)
     return s if self._first == self._last else s + "-%d" % self._last
 
-  def get_text(self):
+  def text(self):
     return self._resource.chapter_text(self._chapter_num, self._first, self._last)
 
   def search(self, pattern):

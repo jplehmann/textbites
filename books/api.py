@@ -39,7 +39,7 @@ class Reference:
     """
     raise NotImplementedError()
 
-  def get_text(self):
+  def text(self):
     """ Return string of the text corresponding to this reference.
         Should probably be unsupported for entire book.
         NOTE: how is whitespace handled?
@@ -52,7 +52,7 @@ class Reference:
     """
     raise NotImplementedError()
 
-  def get_children(self):
+  def children(self):
     """ Return an iterable of References under this item.
     """
     raise NotImplementedError()
