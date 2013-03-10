@@ -8,7 +8,7 @@ import os
 import os.path
 import json
 
-from books.api import Resource
+from books.api import Resource, Reference
 from books.books import BookResource, Book, Chapter, Lines, Line
 from books import library as Library
 
@@ -36,6 +36,7 @@ class TestBooks(unittest.TestCase):
 
   def test_parse_chapter_reference(self):
     ref = self.bres.reference("Chapter 2")
+    self.assertIsInstance(ref, Reference)
     self.assertEquals(ref.pretty(), "Chapter 2")
 
   def test_parse_chapter_reference_lower(self):
@@ -52,6 +53,7 @@ class TestBooks(unittest.TestCase):
 
   def test_parse_chapter_reference_with_start_and_end_lines(self):
     ref = self.bres.reference("2:1-3")
+    self.assertIsInstance(ref, Reference)
     self.assertEquals(ref.pretty(), "Chapter 2:1-3")
 
   def test_chapter_refs(self):
@@ -92,6 +94,7 @@ class TestBooks(unittest.TestCase):
   def test_book_refs(self):
     book = self.bres.top_reference()
     self.assertIsInstance(book, Book)
+    self.assertIsInstance(book, Reference)
     self.assertEquals(book.pretty(), "PRIDE AND PREJUDICE")
     # cannot get text on a book
     self.assertRaises(NotImplementedError, book.text)
@@ -99,18 +102,21 @@ class TestBooks(unittest.TestCase):
     chaps = book.children()
     self.assertEquals(len(chaps), 3)
     c3 = chaps[2]
+    self.assertIsInstance(c3, Reference)
     self.assertIsInstance(c3, Chapter)
     self.assertEquals(c3.pretty(), "Chapter 3")
     self.assertEquals(len(c3.text()), 817)
 
     lines = c3.children()
     self.assertIsInstance(lines, Lines)
+    self.assertIsInstance(lines, Reference)
     self.assertEquals(lines.pretty(), "Chapter 3:1-7")
     self.assertEquals(len(lines.text()), 817)
 
     line_array = lines.children()
     self.assertEquals(len(line_array), 7)
     one_line = line_array[-1]
+    self.assertIsInstance(one_line, Reference)
     self.assertIsInstance(one_line, Line)
     self.assertEquals(one_line.pretty(), "Chapter 3:7")
     self.assertEquals(len(one_line.text()), 128)
