@@ -62,9 +62,17 @@ class TestBooks(unittest.TestCase):
     # TODO individual line ranges
     # adn test open ended ranges
 
-  #def test_book_search(self):
-  #  bres = BookResource.from_json(self.data)
-  #  book.search(
+  def test_book_search(self):
+    bres = BookResource.from_json(self.data)
+    hits = bres.top_reference().search("daughter")
+    self.assertEquals(len(hits), 3)
+    self.assertIsInstance(hits[0], Line)
+    self.assertEquals(hits[0].pretty(), "Chapter 1:2")
+    self.assertEquals(hits[1].pretty(), "Chapter 2:4")
+    self.assertEquals(hits[2].pretty(), "Chapter 3:1")
+    self.assertRaises(NotImplementedError, hits[0].children)
+    self.assertTrue(hits[2].text().startswith("Not all that Mrs."))
+    self.assertTrue(hits[2].text().endswith("of Mr. Bingley."))
 
   
 if __name__ == "__main__":

@@ -3,6 +3,7 @@
 import os
 import sys
 import json
+import re
 
 from api import Reference
 from api import Resource
@@ -60,7 +61,7 @@ class BookResource(Resource):
     first = first_line-1 if first_line != None else None
     return '\n'.join(chapter[first:last_line]).strip()
 
-  def search(self, pattern, chapter_first, chapter_last, line_first, line_last):
+  def search(self, pattern, chapter_first=None, chapter_last=None, line_first=None, line_last=None):
     """ Return Line references for search hits within the specified limits.
         Unspecified boundaries default to open ended. e.g. chapter_last being None
         means it will search all following chapters.
@@ -71,7 +72,7 @@ class BookResource(Resource):
     assert chapter_first != None or line_first == None
     results = []
     # okay for bounds to be None; works properly
-    for i, chapter in enumerate(chapters[chapter_first:chapter_last]):
+    for i, chapter in enumerate(self._chapters[chapter_first:chapter_last], 1):
       for j, line in enumerate(chapter[line_first:line_last], 1):
         if re.search(pattern, line):
           results.append(Line(self, i, j))
