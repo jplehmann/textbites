@@ -100,6 +100,7 @@ class BookResource(Resource):
     fc = first_chapter-1 if first_chapter != None else None
     # okay for bounds to be None; works properly
     # TODO: consider helper functions to avoid worrying about -1 everywhere
+    # NOTE: consider simplify end range by using sys.maxint
     # like ._chapter(x) for returning x-1
     # XXX: might be better off not doing this None stuff
     # XXX: was it a mistake using an array under here?
@@ -212,7 +213,7 @@ class Lines(Reference):
 
   def search(self, pattern):
     cn = self._chapter_num
-    return self_resource.search(pattern, 
+    return self._resource.search(pattern, 
         first_chapter=cn, last_chapter=cn,
         first_line=self._first, last_line=self._last)
 

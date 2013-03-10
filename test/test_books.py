@@ -162,6 +162,11 @@ class TestBooks(unittest.TestCase):
     self.assertEquals(len(hits), 2)
     self.assertEquals(hits[1].pretty(), "Chapter 2:5")
 
+  def test_book_search_of_lines(self):
+    lines = self.bres.reference("2:1-5")
+    hits = lines.search("Mr\.")
+    self.assertEquals(len(hits), 2)
+    self.assertEquals(hits[1].pretty(), "Chapter 2:5")
 
   
 if __name__ == "__main__":
