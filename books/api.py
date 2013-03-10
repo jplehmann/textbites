@@ -11,21 +11,6 @@ TODO:
 """
 
 
-class Library:
-  """ Like a service locator for book resources.
-  """
-  
-  def resources_list(self):
-    """ Return list of Resources available in this library.
-    """
-    raise NotImplementedError()
-
-  def get_resource(self, name):
-    """ Retrieve resource of this name.
-    """
-    raise NotImplementedError()
-
-
 class Resource:
   """ Represents a textual resource which can provide references into it.
   """
@@ -45,6 +30,9 @@ class Resource:
 class Reference:
   """ Represents some section of text.
   """
+  
+  def __init__(self, resource):
+    self._resource = resource
 
   def pretty(self):
     """ Return clean, pretty, canonical string of this reference.
