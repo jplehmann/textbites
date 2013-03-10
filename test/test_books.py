@@ -26,7 +26,12 @@ class TestInterface():
     TestInterface.data = json.load(open(DATA_FILE))
     print TestInterface.data
 
-  # API: Reference tests ...
+  # Resource top_reference()
+  def test_top_reference(self):
+    ref = self.res.top_reference()
+    self.assertIsInstance(ref, Reference)
+
+  # Resource reference parsing
   #{{{
   def test_parse_chapter_reference(self):
     ref = self.res.reference("Chapter 2")
@@ -51,12 +56,7 @@ class TestInterface():
     self.assertEquals(ref.pretty(), "Chapter 2:1-3")
   #}}}
 
-  # API: Resource. top_reference()
-  def test_top_reference(self):
-    ref = self.res.top_reference()
-    self.assertIsInstance(ref, Reference)
-
-  # API: Reference. children(), pretty(), and text()
+  # Reference children(), pretty(), and text()
 #{{{
   def test_book_refs(self):
     book = self.res.top_reference()
@@ -89,7 +89,7 @@ class TestInterface():
     self.assertEquals(len(one_line.text()), 128)
 #}}}
 
-  # API: Reference. search()
+  # Reference search()
 #{{{
   def test_book_search(self):
     book = self.res.top_reference()
@@ -165,7 +165,7 @@ class TestBooksImpl(TestInterface, unittest.TestCase):
   def setUp(self):
     self.res = BookResource.from_json(TestInterface.data)
 
-  # IMPL: chapter-specific tests
+  # BookResource chapter-specific tests
 #{{{
   def test_chapter_refs(self):
     chaps = self.res.chapter_refs()
