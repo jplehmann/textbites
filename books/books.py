@@ -57,25 +57,36 @@ class BookResource(Resource):
     """ Return text from a chapter. If no line numbers are given, it
         returns entire chapter.
     """
+    # TODO: join with logic from Lines.children()
     chapter = self._chapters[chapter_num-1]
     first = first_line-1 if first_line != None else None
     return '\n'.join(chapter[first:last_line]).strip()
 
-  def search(self, pattern, chapter_first=None, chapter_last=None, line_first=None, line_last=None):
+  def search(self, pattern, first_chapter=None, last_chapter=None, first_line=None, last_line=None):
     """ Return Line references for search hits within the specified limits.
-        Unspecified boundaries default to open ended. e.g. chapter_last being None
+        Unspecified boundaries default to open ended. e.g. last_chapter being None
         means it will search all following chapters.
     """
     # test illegal combinations
-    assert chapter_last != None or chapter_first == None
-    assert line_last != None or line_first == None
-    assert chapter_first != None or line_first == None
+    #print "chap boundary", first_chapter, last_chapter
+    assert last_chapter != None or first_chapter == None
+    assert last_line != None or first_line == None
+    assert first_chapter != None or first_line == None
     results = []
+    fl = first_line-1 if first_line != None else None
+    fc = first_chapter-1 if first_chapter != None else None
     # okay for bounds to be None; works properly
-    for i, chapter in enumerate(self._chapters[chapter_first:chapter_last], 1):
-      for j, line in enumerate(chapter[line_first:line_last], 1):
+    # TODO: consider helper functions to avoid worrying about -1 everywhere
+    # like ._chapter(x) for returning x-1
+    # XXX: might be better off not doing this None stuff
+    # XXX: was it a mistake using an array under here?
+    line_offset = fl if fl != None else 0
+    chap_offset = fc if fc != None else 0
+    for i, chapter in enumerate(self._chapters[fc:last_chapter], 1):
+      for j, line in enumerate(chapter[fl:last_line], 1):
+        #print "Searching chapter:verse", i, j
         if re.search(pattern, line):
-          results.append(Line(self, i, j))
+          results.append(Line(self, i+chap_offset, j+line_offset))
     return results
 
 
@@ -100,7 +111,7 @@ Restrictions:
 
 
 class Book(Reference):
-  """ Represents a single book.
+  """ View of a single book.
   """
   def __init__(self, resource):
     Reference.__init__(self, resource)
@@ -120,7 +131,7 @@ class Book(Reference):
 
 
 class Chapter(Reference):
-  """ Represents a single chapter.
+  """ View of a single chapter.
   """
   def __init__(self, resource, chapter_num):
     Reference.__init__(self, resource)
@@ -136,13 +147,13 @@ class Chapter(Reference):
     return self._resource.chapter_text(self._chapter_num)
 
   def search(self, pattern):
-    return self_resource.search(
-        pattern, chapter_first=self._chapter_num, 
-        chapter_last=self._chapter_num)
+    return self._resource.search(
+        pattern, first_chapter=self._chapter_num, 
+        last_chapter=self._chapter_num)
 
 
 class Lines(Reference):
-  """ Represents 1 or more contiguous lines.
+  """ View of 1 or more contiguous lines.
   """
   def __init__(self, resource, chapter_num, first, last):
     """ If a single line, then last == first.
@@ -157,6 +168,7 @@ class Lines(Reference):
   def children(self):
     """ Maybe unnecessary?
     """
+    # TODO: move into resource?
     # use python slice to handle Nones
     line_nums = range(1, self._resource.chapter_length(self._chapter_num)+1)
     first = self._first-1 if self._first != None else None
@@ -175,12 +187,12 @@ class Lines(Reference):
   def search(self, pattern):
     cn = self._chapter_num
     return self_resource.search(pattern, 
-        chapter_first=cn, chapter_last=cn,
-        line_first=self._first, line_last=self._last)
+        first_chapter=cn, last_chapter=cn,
+        first_line=self._first, last_line=self._last)
 
 
 class Line(Lines, Reference):
-  """ Represents 1 line.  Implemented as special case of Lines.
+  """ View of 1 line.  Implemented as special case of Lines.
   """
   def __init__(self, resource, chapter_num, line_num):
     assert line_num != None

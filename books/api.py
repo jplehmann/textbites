@@ -57,3 +57,5 @@ class Reference(object):
     """
     raise NotImplementedError()
 
+  # TODO: add parent()?
+

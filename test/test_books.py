@@ -46,6 +46,7 @@ class TestBooks(unittest.TestCase):
     self.assertEquals(c3.pretty(), "Chapter 3")
     self.assertEquals(len(c3.text()), 817)
 
+    # TODO rename line above to line range?
     lines = c3.children()
     self.assertIsInstance(lines, Lines)
     self.assertEquals(lines.pretty(), "Chapter 3:1-7")
@@ -64,7 +65,8 @@ class TestBooks(unittest.TestCase):
 
   def test_book_search(self):
     bres = BookResource.from_json(self.data)
-    hits = bres.top_reference().search("daughter")
+    book = bres.top_reference()
+    hits = book.search("daughter")
     self.assertEquals(len(hits), 3)
     self.assertIsInstance(hits[0], Line)
     self.assertEquals(hits[0].pretty(), "Chapter 1:2")
@@ -73,6 +75,17 @@ class TestBooks(unittest.TestCase):
     self.assertRaises(NotImplementedError, hits[0].children)
     self.assertTrue(hits[2].text().startswith("Not all that Mrs."))
     self.assertTrue(hits[2].text().endswith("of Mr. Bingley."))
+
+    # TODO put this in a different test
+    # TODO: test searching withing different scopes
+    # chapter scope
+    chaps = book.children()
+    c3 = chaps[2]
+    chap_hits = c3.search("daughter")
+    self.assertEquals(len(chap_hits), 1)
+    self.assertEquals(chap_hits[0].pretty(), "Chapter 3:1")
+
+    # Lines scope
 
   
 if __name__ == "__main__":
