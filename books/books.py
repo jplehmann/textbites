@@ -79,7 +79,7 @@ class BookResource(Resource):
     """
     # TODO: join with logic from Lines.children()
     chapter = self._chapters[chapter_num-1]
-    first = first_line-1 if first_line != None else None
+    first = decrement(first_line)
     return '\n'.join(chapter[first:last_line]).strip()
 
   def search(self, pattern, first_chapter=None, last_chapter=None, first_line=None, last_line=None):
@@ -93,8 +93,8 @@ class BookResource(Resource):
     if (first_chapter != last_chapter) and not (first_line == None and last_line == None):
       raise IllegalSearchError
     results = []
-    fl = first_line-1 if first_line != None else None
-    fc = first_chapter-1 if first_chapter != None else None
+    fl = decrement(first_line)
+    fc = decrement(first_chapter)
     # okay for bounds to be None; works properly
     # TODO: consider helper functions to avoid worrying about -1 everywhere
     # NOTE: consider simplify end range by using sys.maxint
@@ -195,7 +195,7 @@ class Lines(Reference):
     # TODO: move into resource?
     # use python slice to handle Nones
     line_nums = range(1, self._resource.chapter_length(self._chapter_num)+1)
-    first = self._first-1 if self._first != None else None
+    first = decrement(self._first)
     return [Line(self._resource, self._chapter_num, num) 
         for num in line_nums[first:self._last]]
 
@@ -233,4 +233,7 @@ class UnparsableReferenceError(Exception):
 
 class IllegalSearchError(Exception):
   pass
+
+def decrement(val):
+  return val-1 if val != None else None
 
