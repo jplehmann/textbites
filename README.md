@@ -15,6 +15,8 @@ x Tests
 Todo
 ----
 - Create a second implementation with a 'simpler' non-view approach
+  - ViewImpl
+  - ContainerImpl
 
 - Consider whether Line and Lines are confusing, or inconsistent?
   1) I think the problem is that Chapter.children() does not return an array 

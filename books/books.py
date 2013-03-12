@@ -48,8 +48,8 @@ class BookResource(Resource):
         return Chapter(self, int(chap))
       end = m.group(3)
       if not end:
-        return Lines(self, int(chap), int(start), int(start))
-      return Lines(self, int(chap), int(start), int(end))
+        return LineRange(self, int(chap), int(start), int(start))
+      return LineRange(self, int(chap), int(start), int(end))
     raise UnparsableReferenceError()
 
   def top_reference(self):
@@ -57,7 +57,7 @@ class BookResource(Resource):
     """
     return Book(self)
     
-  def chapter_refs(self):
+  def chapters(self):
     """ Produce list of Chapter reference.
     """
     c_refs = []
@@ -68,16 +68,24 @@ class BookResource(Resource):
   def chapter_length(self, chapter_num):
     return len(self._chapters[chapter_num-1])
 
-  def chapter_lines_ref(self, chapter_num):
-    """ Produce Lines reference.
+  def linegroup_for_chapter(self, chapter_num):
+    """ Produce LineRange reference.
+        Not really used any longer.
     """
-    return Lines(self, chapter_num, 1, self.chapter_length(chapter_num))
+    return LineRange(self, chapter_num, 1, self.chapter_length(chapter_num))
+
+  def lines_for_chapter(self, chapter_num, first_line=None, last_line=None):
+    # use python slice to handle Nones
+    # create range so we have numbers for line numbers
+    first = val_or_default(first_line, 1)
+    last = val_or_default(last_line, self.chapter_length(chapter_num))
+    return [Line(self, chapter_num, n) for n in range(first, last+1)]
 
   def chapter_text(self, chapter_num, first_line=None, last_line=None):
     """ Return text from a chapter. If no line numbers are given, it
         returns entire chapter.
     """
-    # TODO: join with logic from Lines.children()
+    # TODO: join with logic from lines_for_chapter
     chapter = self._chapters[chapter_num-1]
     first = decrement(first_line)
     return '\n'.join(chapter[first:last_line]).strip()
@@ -138,7 +146,7 @@ class Book(Reference):
     Reference.__init__(self, resource)
 
   def children(self):
-    return self._resource.chapter_refs()
+    return self._resource.chapters()
 
   def pretty(self):
     return self._resource._title
@@ -159,7 +167,7 @@ class Chapter(Reference):
     self._chapter_num = chapter_num
 
   def children(self):
-    return self._resource.chapter_lines_ref(self._chapter_num)
+    return self._resource.lines_for_chapter(self._chapter_num)
 
   def pretty(self):
     return "Chapter %d" % self._chapter_num
@@ -176,7 +184,7 @@ class Chapter(Reference):
     return self._chapter_num
 
 
-class Lines(Reference):
+class LineRange(Reference):
   """ View of 1 or more contiguous lines.
   """
   def __init__(self, resource, chapter_num, first, last):
@@ -192,12 +200,7 @@ class Lines(Reference):
   def children(self):
     """ Maybe unnecessary?
     """
-    # TODO: move into resource?
-    # use python slice to handle Nones
-    line_nums = range(1, self._resource.chapter_length(self._chapter_num)+1)
-    first = decrement(self._first)
-    return [Line(self._resource, self._chapter_num, num) 
-        for num in line_nums[first:self._last]]
+    return self._resource.lines_for_chapter(self._chapter_num)
 
   def pretty(self):
     first = self._first if self._first != None else "*"
@@ -215,15 +218,15 @@ class Lines(Reference):
         first_line=self._first, last_line=self._last)
 
 
-class Line(Lines, Reference):
-  """ View of 1 line.  Implemented as special case of Lines.
+class Line(LineRange, Reference):
+  """ View of 1 line.  Implemented as special case of LineRange.
   """
   def __init__(self, resource, chapter_num, line_num):
     assert line_num != None
-    Lines.__init__(self, resource, chapter_num, line_num, line_num)
+    LineRange.__init__(self, resource, chapter_num, line_num, line_num)
 
   def children(self):
-    """ Must raise else will call Lines resulting in loop.
+    """ Must raise else will call LineRange resulting in loop.
     """
     raise NotImplementedError()
 
@@ -234,6 +237,12 @@ class UnparsableReferenceError(Exception):
 class IllegalSearchError(Exception):
   pass
 
-def decrement(val):
-  return val-1 if val != None else None
+def decrement(val, none_val=None):
+  return val-1 if val != None else none_val
+
+def increment(val, none_val=None):
+  return val+1 if val != None else none_val
+
+def val_or_default(val, none_val=None):
+  return val if val != None else none_val
 
