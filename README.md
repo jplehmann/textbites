@@ -42,3 +42,6 @@ So Lines is what breaks the pattern.
     3. it's used for children of a chapter but we could change that.
     4. Then should we add Chapters also? and Books? if needed
   - Are lists okay? I think so if they provide a field which gives the id like chapter did.
+
+
+TODO: look into iterator notation (...) rather than [ ]

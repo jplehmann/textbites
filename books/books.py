@@ -85,10 +85,14 @@ class BookResource(Resource):
     """ Return text from a chapter. If no line numbers are given, it
         returns entire chapter.
     """
-    # TODO: join with logic from lines_for_chapter
     chapter = self._chapters[chapter_num-1]
     first = decrement(first_line)
     return '\n'.join(chapter[first:last_line]).strip()
+    # Get the Line references then use those to build the text
+    # this doesn't work yet but way more complex and less efficient
+    #'\n'.join([self._chapters[chapter_num-1][x._first-1] for x in 
+    #      self.lines_for_chapter(chapter_num, first_line, last_line)])
+
 
   def search(self, pattern, first_chapter=None, last_chapter=None, first_line=None, last_line=None):
     """ Return Line references for search hits within the specified limits.
@@ -106,11 +110,12 @@ class BookResource(Resource):
     # okay for bounds to be None; works properly
     # TODO: consider helper functions to avoid worrying about -1 everywhere
     # NOTE: consider simplify end range by using sys.maxint
+    # TODO: consider joining with logic from above now
     # like ._chapter(x) for returning x-1
     # XXX: might be better off not doing this None stuff
     # XXX: was it a mistake using an array under here?
-    line_offset = fl if fl != None else 0
-    chap_offset = fc if fc != None else 0
+    line_offset = val_or_default(fl)
+    chap_offset = val_or_default(fc)
     for i, chapter in enumerate(self._chapters[fc:last_chapter], 1):
       for j, line in enumerate(chapter[fl:last_line], 1):
         #print "Searching chapter:verse", i, j
@@ -243,6 +248,6 @@ def decrement(val, none_val=None):
 def increment(val, none_val=None):
   return val+1 if val != None else none_val
 
-def val_or_default(val, none_val=None):
+def val_or_default(val, none_val=0):
   return val if val != None else none_val
 
