@@ -27,3 +27,16 @@ Todo
 - Could possibly simplify by not using array in the resource, to help with off by one
   - and/or we could use arrays with a dummy element
 
+- Book.children -> [Chapter]
+- Chapter.children -> Lines
+- Lines.children -> [Line]
+
+So Lines is what breaks the pattern.  
+  - Do I need that?
+    1. when you convert the reference 1:3-4, it's so you can have a single
+       reference for that range. This is kinda nice and handy.
+       We could use this for refs, but skip it for children of chapter.
+    2. The implementation  of Line is very simple given Lines.
+    3. it's used for children of a chapter but we could change that.
+    4. Then should we add Chapters also? and Books? if needed
+  - Are lists okay? I think so if they provide a field which gives the id like chapter did.
