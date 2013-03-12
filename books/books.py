@@ -1,5 +1,23 @@
 #!/usr/bin/env python
+"""
+This implementation of Resource and Reference provides references as views. The
+references do not actually contain the data, but they contain the information
+necessary to retrieve the data from the resource. Data is stored in the Resource
+in lists of strings.
 
+Another implementation might actually store the data in the same sorts of
+objects which are handed back as references to the user, though there might.
+
+The purpose of references is like the composite pattern, to allow the user to
+easily traverse the structure while providing abstraction about the types of
+objects being handled.
+
+Restrictions:
+1. single book
+2. lines must be contiguous
+3. can only reference a chapter at a time?
+4. saves no paragraph whitespace
+"""
 import re
 
 from api import Reference
@@ -22,20 +40,20 @@ class BookResource(Resource):
     return BookResource(title, author, chapters)
 
   def __init__(self, title, author, chapters):
-    """
-    Chapters should be a list of list of strings.
+    """ Chapters should be a list of list of strings.
     """
     self._title = title
     self._author = author
     self._chapters = chapters
 
   def reference(self, str_ref):
-    """ Parse this string reference and return an object.
-        Chapter N
-        chapter N
-        N
-        Chapter N:M
-        Chapter N:M-P
+    """ Parse this string reference and return an object. 
+        Supports the following formats:
+          Chapter N
+          chapter N
+          N
+          Chapter N:M
+          Chapter N:M-P
         Doesn't support chapter range
         Doesn't support open ended line ranges
     """
@@ -119,26 +137,6 @@ class BookResource(Resource):
     return results
 
 
-"""
-create a reference (view), and give it a reference name
-then when it wants anything, use that string
-
-No, reference really needs to be able to get its own stuff
-It should call methods on the bookresource, like getChapter()
-
-Why not just give it back a book then, why give it a reference?
-I think the answer is a) this is the composite pattern which
-makes traversal easier. b) give it a object handle instead of
-string ref handles
-
-Restrictions:
-1. single book
-2. lines must be contiguous
-3. can only reference a chapter at a time?
-4. saves no paragraph whitespace
-"""
-
-
 class Book(Reference):
   """ View of a single book.
   """
@@ -185,7 +183,9 @@ class Chapter(Reference):
 
 
 class LineRange(Reference):
-  """ View of 1 or more contiguous lines.
+  """ View of 1 or more contiguous lines. This is not returned
+      as a result of Reference.children() for consistency, but it is
+      the result of calls to Resource.reference() for convenience.
   """
   def __init__(self, resource, chapter_num, first, last):
     """ If a single line, then last == first.
