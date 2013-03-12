@@ -88,11 +88,6 @@ class BookResource(Resource):
     chapter = self._chapters[chapter_num-1]
     first = decrement(first_line)
     return '\n'.join(chapter[first:last_line]).strip()
-    # Get the Line references then use those to build the text
-    # this doesn't work yet but way more complex and less efficient
-    #'\n'.join([self._chapters[chapter_num-1][x._first-1] for x in 
-    #      self.lines_for_chapter(chapter_num, first_line, last_line)])
-
 
   def search(self, pattern, first_chapter=None, last_chapter=None, first_line=None, last_line=None):
     """ Return Line references for search hits within the specified limits.
