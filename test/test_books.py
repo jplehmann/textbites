@@ -27,30 +27,30 @@ class TestInterface():
     print TestInterface.data
 
   # Resource top_reference()
-  def test_top_reference(self):
+  def test_resource_top_reference(self):
     ref = self.res.top_reference()
     self.assertIsInstance(ref, Reference)
 
-  # Resource reference parsing
+  # Resource reference() parsing
   #{{{
-  def test_parse_chapter_reference(self):
+  def test_resource_parse_chapter_reference(self):
     ref = self.res.reference("Chapter 2")
     self.assertIsInstance(ref, Reference)
     self.assertEquals(ref.pretty(), "Chapter 2")
 
-  def test_parse_chapter_reference_lower(self):
+  def test_resource_parse_chapter_reference_lower(self):
     ref = self.res.reference("chapter 2")
     self.assertEquals(ref.pretty(), "Chapter 2")
 
-  def test_parse_chapter_reference_without_chapter(self):
+  def test_resource_parse_chapter_reference_without_chapter(self):
     ref = self.res.reference("2")
     self.assertEquals(ref.pretty(), "Chapter 2")
 
-  def test_parse_chapter_reference_with_one_line(self):
+  def test_resource_parse_chapter_reference_with_one_line(self):
     ref = self.res.reference("2:1")
     self.assertEquals(ref.pretty(), "Chapter 2:1")
 
-  def test_parse_chapter_reference_with_start_and_end_lines(self):
+  def test_resource_parse_chapter_reference_with_start_and_end_lines(self):
     ref = self.res.reference("2:1-3")
     self.assertIsInstance(ref, Reference)
     self.assertEquals(ref.pretty(), "Chapter 2:1-3")
@@ -58,8 +58,10 @@ class TestInterface():
 
   # Reference children(), pretty(), and text()
 #{{{
-  def test_book_refs(self):
-    # TODO: break me up into multiple tests
+  def test_reference_book_refs(self):
+    """ Walk the reference chain, testing children(),
+        pretty(), and text() along the way.
+    """
     book = self.res.top_reference()
     self.assertIsInstance(book, Reference)
     #self.assertIsInstance(book, Book)
@@ -74,12 +76,6 @@ class TestInterface():
     #self.assertIsInstance(c3, Chapter)
     self.assertEquals(c3.pretty(), "Chapter 3")
     self.assertEquals(len(c3.text()), 817)
-
-    #linerange = c3.children()
-    #self.assertIsInstance(linerange, Reference)
-    ##self.assertIsInstance(linerange, LineRange)
-    #self.assertEquals(linerange.pretty(), "Chapter 3:1-7")
-    #self.assertEquals(len(linerange.text()), 817)
 
     lines = c3.children()
     self.assertEquals(len(lines), 7)
