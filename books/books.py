@@ -56,10 +56,10 @@ class BookResource(Resource):
           Chapter N:M-P
         Doesn't support chapter range
         Doesn't support open ended line ranges
+        Currently doesn't do any validation.
     """
     m = re.match("(?:[Cc]hapter ?)?(\d+)(?::(\d+)(?:-(\d+))?)?", str_ref)
     if m:
-      # TODO: should we do checking?
       chap = m.group(1)
       start = m.group(2)
       if not start:
@@ -84,7 +84,7 @@ class BookResource(Resource):
     return c_refs
 
   def chapter_length(self, chapter_num):
-    return len(self._chapters[chapter_num-1])
+    return len(self._chapters[zero_indexed(chapter_num)])
 
   def linegroup_for_chapter(self, chapter_num):
     """ Produce LineRange reference.
@@ -103,32 +103,29 @@ class BookResource(Resource):
     """ Return text from a chapter. If no line numbers are given, it
         returns entire chapter.
     """
-    chapter = self._chapters[chapter_num-1]
-    first = decrement(first_line)
-    return '\n'.join(chapter[first:last_line]).strip()
+    chapter = self._chapters[zero_indexed(chapter_num)]
+    return '\n'.join(chapter[zero_indexed(first_line):last_line]).strip()
 
-  def search(self, pattern, first_chapter=None, last_chapter=None, first_line=None, last_line=None):
+  def search(self, pattern, first_chapter=None, last_chapter=None, 
+                            first_line=None, last_line=None):
     """ Return Line references for search hits within the specified limits.
         Unspecified boundaries default to open ended. e.g. last_chapter being None
         means it will search all following chapters.
     """
     #print "chap boundary", first_chapter, last_chapter, first_line, last_line
-    # don't allow line ranges with multiple chapters
-    # if chapters dont match THEN also ranges are none
-    if (first_chapter != last_chapter) and not (first_line == None and last_line == None):
+    # don't allow line ranges across multiple chapters
+    if ((first_chapter != last_chapter) and 
+        not (first_line == None and last_line == None)):
       raise IllegalSearchError
     results = []
-    fl = decrement(first_line)
-    fc = decrement(first_chapter)
-    # okay for bounds to be None; works properly
-    # TODO: consider helper functions to avoid worrying about -1 everywhere
-    # NOTE: consider simplify end range by using sys.maxint
-    # TODO: consider joining with logic from above now
-    # like ._chapter(x) for returning x-1
-    # XXX: might be better off not doing this None stuff
-    # XXX: was it a mistake using an array under here?
+    # last value doesn't have to be converted since it's an exclusive selection
+    fl = zero_indexed(first_line)
+    fc = zero_indexed(first_chapter)
     line_offset = val_or_default(fl)
     chap_offset = val_or_default(fc)
+    # slicing the arrays works well for handling None, but the challenge is
+    # those items iterated over don't know what their numeric index is, so we
+    # have to track the enumeration and an offset.
     for i, chapter in enumerate(self._chapters[fc:last_chapter], 1):
       for j, line in enumerate(chapter[fl:last_line], 1):
         #print "Searching chapter:verse", i, j
@@ -237,7 +234,10 @@ class UnparsableReferenceError(Exception):
 class IllegalSearchError(Exception):
   pass
 
-def decrement(val, none_val=None):
+def zero_indexed(val, none_val=None):
+  """ Convert this 1-based index to a 0-based one,
+      Also considering that None should not be modified.
+  """
   return val-1 if val != None else none_val
 
 def increment(val, none_val=None):

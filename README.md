@@ -5,9 +5,6 @@ pyBooks
 
 Questions
 ---------
-o in python are all strings references to same data? is returning
-  original data a risk, and how do I copy?
-o look into iterator notation (...) rather than [ ]
 
 Done
 ----
@@ -18,8 +15,10 @@ x children returns [Line]
 
 Todo
 ----
+o can I use generator expressions anywhere rather than LC's
 o do Line return an index to their user?
-- can i refactor with other objects?  or more helpers?
+- can i refactor with other objects? 
+  - helpers to eliminate -1 everywhere?
 - Create a second implementation with a 'simpler' non-view approach
   - ViewImpl
   - ContainerImpl
