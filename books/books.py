@@ -6,11 +6,12 @@ necessary to retrieve the data from the resource. Data is stored in the Resource
 in lists of strings.
 
 Another implementation might actually store the data in the same sorts of
-objects which are handed back as references to the user, though there might.
+objects which are handed back as references to the user.
 
 The purpose of references is like the composite pattern, to allow the user to
 easily traverse the structure while providing abstraction about the types of
-objects being handled.
+objects being handled. Also, there is less overhead because the references
+are not created until they are needed.
 
 Restrictions:
 1. single book
@@ -58,16 +59,20 @@ class BookResource(Resource):
         Doesn't support open ended line ranges
         Currently doesn't do any validation.
     """
-    m = re.match("(?:[Cc]hapter ?)?(\d+)(?::(\d+)(?:-(\d+))?)?", str_ref)
+    m = re.match("(?:[Cc]hapter ?)?(\d+)(?:-(\d+))?(?::(\d+)(?:-(\d+))?)?", str_ref)
     if m:
-      chap = m.group(1)
-      start = m.group(2)
+      chap_start = m.group(1)
+      chap_end = m.group(2)
+      start = m.group(3)
       if not start:
-        return Chapter(self, int(chap))
-      end = m.group(3)
+        if not chap_end:
+          return Chapter(self, int(chap_start))
+        else:
+          return ChapterRange(self, int(chap_start), int(chap_end))
+      end = m.group(4)
       if not end:
-        return LineRange(self, int(chap), int(start), int(start))
-      return LineRange(self, int(chap), int(start), int(end))
+        return LineRange(self, int(chap_start), int(start), int(start))
+      return LineRange(self, int(chap_start), int(start), int(end))
     raise UnparsableReferenceError()
 
   def top_reference(self):
@@ -134,11 +139,18 @@ class BookResource(Resource):
     return results
 
 
-class Book(Reference):
+class ReferenceImpl(Reference):
+  """ Represents some section of text.
+  """
+  def __init__(self, resource):
+    self._resource = resource
+
+
+class Book(ReferenceImpl):
   """ View of a single book.
   """
   def __init__(self, resource):
-    Reference.__init__(self, resource)
+    ReferenceImpl.__init__(self, resource)
 
   def children(self):
     return self._resource.chapters()
@@ -154,11 +166,46 @@ class Book(Reference):
     return self._resource.search(pattern)
 
 
-class Chapter(Reference):
+class ChapterRange(ReferenceImpl):
+  """ View of 1 or more contiguous chapters. This is not returned
+      as a result of Reference.children() for consistency, but it is
+      the result of calls to Resource.reference() for convenience.
+  """
+  def __init__(self, resource, first, last):
+    """ If a single chapter, then last == first.
+        None means open ended.
+    """
+    ReferenceImpl.__init__(self, resource)
+    self._first = first
+    self._last = last
+    assert self._first <= self._last
+
+  def children(self):
+    """ Maybe unnecessary?
+    """
+    # XXX this is not right
+    #return self._resource.chapters_for_chapter(self._chapter_num)
+    raise NotImplementedError()
+
+  def pretty(self):
+    first = self._first if self._first != None else "*"
+    last = self._last if self._last != None else "*"
+    return "Chapter %d-%d" % (first, last)
+
+  def text(self):
+    #return self._resource.chapter_text(self._chapter_num, self._first, self._last)
+    raise NotImplementedError()
+
+  def search(self, pattern):
+    return self._resource.search(pattern, 
+        first_chapter=self.first, last_chapter=self.last)
+
+
+class Chapter(ReferenceImpl):
   """ View of a single chapter.
   """
   def __init__(self, resource, chapter_num):
-    Reference.__init__(self, resource)
+    ReferenceImpl.__init__(self, resource)
     self._chapter_num = chapter_num
 
   def children(self):
@@ -179,7 +226,7 @@ class Chapter(Reference):
     return self._chapter_num
 
 
-class LineRange(Reference):
+class LineRange(ReferenceImpl):
   """ View of 1 or more contiguous lines. This is not returned
       as a result of Reference.children() for consistency, but it is
       the result of calls to Resource.reference() for convenience.
@@ -188,16 +235,19 @@ class LineRange(Reference):
     """ If a single line, then last == first.
         None means open ended.
     """
-    Reference.__init__(self, resource)
+    ReferenceImpl.__init__(self, resource)
     self._chapter_num = chapter_num
     self._first = first
     self._last = last
+    assert self._first <= self._last
     assert self._first == None or self._last == None or self._first <= self._last
 
   def children(self):
     """ Maybe unnecessary?
     """
-    return self._resource.lines_for_chapter(self._chapter_num)
+    # XXX this is not right, because it shouldn't return all lines
+    #return self._resource.lines_for_chapter(self._chapter_num)
+    raise NotImplementedError()
 
   def pretty(self):
     first = self._first if self._first != None else "*"
@@ -215,7 +265,7 @@ class LineRange(Reference):
         first_line=self._first, last_line=self._last)
 
 
-class Line(LineRange, Reference):
+class Line(LineRange, ReferenceImpl):
   """ View of 1 line.  Implemented as special case of LineRange.
   """
   def __init__(self, resource, chapter_num, line_num):

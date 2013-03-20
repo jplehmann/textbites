@@ -29,9 +29,6 @@ class Reference(object):
         detail.
       - next()/prev() - for walking the chain
   """
-  
-  def __init__(self, resource):
-    self._resource = resource
 
   def pretty(self):
     """ Return a canonical string of this reference.

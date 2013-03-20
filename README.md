@@ -5,6 +5,9 @@ pyBooks
 
 Questions
 ---------
+- simple books
+  - issue: interface doesn't have search over a range of chapters, and
+    this is a pretty important feature
 
 Done
 ----
