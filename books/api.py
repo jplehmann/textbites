@@ -9,7 +9,16 @@ class Resource:
   """
 
   def reference(self, string_ref):
-    """ Return an object representation of this string.
+    """ Parse this string reference and return an object. 
+        Supports the following formats:
+          Chapter N
+          chapter N
+          N
+          Chapter N:M
+          Chapter N:M-P
+        Doesn't support chapter range
+        Doesn't support open ended line ranges
+        Currently doesn't do any validation.
     """
     raise NotImplementedError()
 
@@ -53,4 +62,8 @@ class Reference(object):
     """ Return an iterable of References under this item.
     """
     raise NotImplementedError()
+
+
+class UnparsableReferenceError(Exception):
+  pass
 
