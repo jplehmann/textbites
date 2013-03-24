@@ -110,35 +110,47 @@ class TestInterface():
     self.assertEquals(hits[0].pretty(), "Chapter 3:1")
 
   def test_book_search_from_chapter(self):
+    book = self.res.top_reference()
     # chapter 2-
-    hits = self.res.search("daughter", first_chapter=2)
+    hits = book.search("daughter", first_chapter=2)
     self.assertEquals(len(hits), 2)
     self.assertEquals(hits[0].pretty(), "Chapter 2:4")
 
   def test_book_search_to_chapter(self):
+    book = self.res.top_reference()
     # chapter -2
-    hits = self.res.search("daughter", last_chapter=2)
+    hits = book.search("daughter", last_chapter=2)
     self.assertEquals(len(hits), 2)
     self.assertEquals(hits[0].pretty(), "Chapter 1:2")
 
   def test_book_search_line_range(self):
+    book = self.res.top_reference()
     # chapter 2:1-6
-    hits = self.res.search("Mr\.", first_chapter=2, last_chapter=2, first_line=1, last_line=6)
+    hits = book.search("Mr\.", first_chapter=2, last_chapter=2, first_line=1, last_line=6)
     self.assertEquals(len(hits), 3)
     self.assertEquals(hits[0].pretty(), "Chapter 2:1")
     self.assertEquals(hits[1].pretty(), "Chapter 2:5")
     self.assertEquals(hits[2].pretty(), "Chapter 2:6")
 
   def test_book_search_from_line(self):
+    book = self.res.top_reference()
     # chapter 2:1-
-    hits = self.res.search("Mr\.", first_chapter=2, last_chapter=2, first_line=2)
+    hits = book.search("Mr\.", first_chapter=2, last_chapter=2, first_line=2)
     self.assertEquals(len(hits), 2)
     self.assertEquals(hits[0].pretty(), "Chapter 2:5")
 
   def test_book_search_to_line(self):
+    book = self.res.top_reference()
     # chapter 2:-5
-    hits = self.res.search("Mr\.", first_chapter=2, last_chapter=2, last_line=5)
+    hits = book.search("Mr\.", first_chapter=2, last_chapter=2, last_line=5)
     self.assertEquals(len(hits), 2)
+    self.assertEquals(hits[1].pretty(), "Chapter 2:5")
+
+  def test_book_search_of_chapters(self):
+    # chapter 2:1-5
+    lines = self.res.reference("2-3")
+    hits = lines.search("Mr\.")
+    self.assertEquals(len(hits), 5)
     self.assertEquals(hits[1].pretty(), "Chapter 2:5")
 
   def test_book_search_of_lines(self):

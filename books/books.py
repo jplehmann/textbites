@@ -21,9 +21,7 @@ Restrictions:
 """
 import re
 
-from api import Reference
-from api import Resource
-
+from api import Reference, Resource, UnparsableReferenceError
 
 class BookResource(Resource):
 
@@ -49,15 +47,6 @@ class BookResource(Resource):
 
   def reference(self, str_ref):
     """ Parse this string reference and return an object. 
-        Supports the following formats:
-          Chapter N
-          chapter N
-          N
-          Chapter N:M
-          Chapter N:M-P
-        Doesn't support chapter range
-        Doesn't support open ended line ranges
-        Currently doesn't do any validation.
     """
     m = re.match("(?:[Cc]hapter ?)?(\d+)(?:-(\d+))?(?::(\d+)(?:-(\d+))?)?", str_ref)
     if m:
@@ -162,8 +151,10 @@ class Book(ReferenceImpl):
     """ Too much text. """
     raise NotImplementedError()
 
-  def search(self, pattern):
-    return self._resource.search(pattern)
+  def search(self, pattern, first_chapter=None, last_chapter=None, 
+                            first_line=None, last_line=None):
+    return self._resource.search(pattern, 
+        first_chapter, last_chapter, first_line, last_line)
 
 
 class ChapterRange(ReferenceImpl):
@@ -198,7 +189,7 @@ class ChapterRange(ReferenceImpl):
 
   def search(self, pattern):
     return self._resource.search(pattern, 
-        first_chapter=self.first, last_chapter=self.last)
+        first_chapter=self._first, last_chapter=self._last)
 
 
 class Chapter(ReferenceImpl):
@@ -277,9 +268,6 @@ class Line(LineRange, ReferenceImpl):
     """
     raise NotImplementedError()
 
-
-class UnparsableReferenceError(Exception):
-  pass
 
 class IllegalSearchError(Exception):
   pass
