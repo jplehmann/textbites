@@ -65,5 +65,12 @@ class Reference(object):
 
 
 class UnparsableReferenceError(Exception):
+  """ Reference format is not supported.
+  """
+  pass
+
+class InvalidReferenceError(Exception):
+  """ Reference is out of bounds. 
+  """
   pass
 

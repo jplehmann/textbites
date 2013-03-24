@@ -7,7 +7,7 @@ import os
 import os.path
 import json
 
-from books.api import Reference
+from books.api import Reference, InvalidReferenceError
 
 
 DATA_FILE = os.path.join(os.path.dirname(__file__), "../data/pp-sample.json")
@@ -43,13 +43,19 @@ class TestInterface():
     ref = self.res.reference("2")
     self.assertEquals(ref.pretty(), "Chapter 2")
 
+  def test_resource_parse_chapter_range_illegal(self):
+    self.assertRaises(InvalidReferenceError, self.res.reference, "chapter 2-5")
+
   def test_resource_parse_chapter_range_lower(self):
-    ref = self.res.reference("chapter 2-5")
-    self.assertEquals(ref.pretty(), "Chapter 2-5")
+    ref = self.res.reference("chapter 2-3")
+    self.assertEquals(ref.pretty(), "Chapter 2-3")
 
   def test_resource_parse_chapter_reference_with_one_line(self):
     ref = self.res.reference("2:1")
     self.assertEquals(ref.pretty(), "Chapter 2:1")
+
+  def test_resource_parse_line_range_illegal(self):
+    self.assertRaises(InvalidReferenceError, self.res.reference, "chapter 2:1-50")
 
   def test_resource_parse_chapter_reference_with_start_and_end_lines(self):
     ref = self.res.reference("2:1-3")

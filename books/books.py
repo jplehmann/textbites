@@ -21,7 +21,8 @@ Restrictions:
 """
 import re
 
-from api import Reference, Resource, UnparsableReferenceError
+from api import Reference, Resource, UnparsableReferenceError, InvalidReferenceError
+from .utils import *
 
 class BookResource(Resource):
 
@@ -57,10 +58,14 @@ class BookResource(Resource):
         if not chap_end:
           return Chapter(self, int(chap_start))
         else:
+          if int(chap_end) > len(self._chapters):
+            raise InvalidReferenceError()
           return ChapterRange(self, int(chap_start), int(chap_end))
       end = m.group(4)
       if not end:
         return LineRange(self, int(chap_start), int(start), int(start))
+      if int(end) > self.chapter_length(int(chap_start)):
+        raise InvalidReferenceError()
       return LineRange(self, int(chap_start), int(start), int(end))
     raise UnparsableReferenceError()
 
@@ -243,8 +248,8 @@ class LineRange(ReferenceImpl):
   def pretty(self):
     first = self._first if self._first != None else "*"
     last = self._last if self._last != None else "*"
-    s = "Chapter %d:%s" % (self._chapter_num, first)
-    return s if first == last else s + "-%s" % last
+    s = "Chapter %d:%d" % (self._chapter_num, first)
+    return s if first == last else s + "-%d" % last
 
   def text(self):
     return self._resource.chapter_text(self._chapter_num, self._first, self._last)
@@ -271,16 +276,4 @@ class Line(LineRange, ReferenceImpl):
 
 class IllegalSearchError(Exception):
   pass
-
-def zero_indexed(val, none_val=None):
-  """ Convert this 1-based index to a 0-based one,
-      Also considering that None should not be modified.
-  """
-  return val-1 if val != None else none_val
-
-def increment(val, none_val=None):
-  return val+1 if val != None else none_val
-
-def val_or_default(val, none_val=0):
-  return val if val != None else none_val
 
