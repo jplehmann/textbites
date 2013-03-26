@@ -4,63 +4,58 @@ Adapt Bible API into that which pybooks expects.
 """
 import re
 
-from pybooks.api import Reference, Resource, UnparsableReferenceError, InvalidReferenceError
+from api import Reference, Resource, UnparsableReferenceError, InvalidReferenceError
 from .utils import *
-import bibref
-import sys
 
-bibref.init()
+from pybible.loader import loader
+from pybible import bibref
+
 
 class BibleResource(Resource):
 
   @staticmethod
-  def from_txt(data):
-    # TODO
-    """ Create a resource from json data.
-        Assumes title, author, chapters/text
-    """
-    #chapters = []
-    #for cnum, chapter in enumerate(data.get("chapters"), 1):
-    #  lines = []
-    #  for lnum, line in enumerate(chapter.get("text").split('\n'), 1):
-    #    lines.append(Line(cnum, lnum, line))
-    #  chapters.append(Chapter(cnum, lines))
-    #title = data.get("title")
-    #author = data.get("author")
-    #return SimpleBookResource(Book(chapters, title, author))
+  def init():
+    loader.init()
 
-  def __init__(self, book):
+  @staticmethod
+  def load_default():
+    return BibleResource()
+
+  def __init__(self):
     """ Stores only the top reference.
     """
-    self.books = books
 
   def reference(self, str_ref):
     """ Parse this string reference and return an object. 
     """
-    m = re.match("(?:[Cc]hapter ?)?(\d+)(?:-(\d+))?(?::(\d+)(?:-(\d+))?)?", str_ref)
-    if m:
-      chap_start = m.group(1)
-      chap_end = m.group(2)
-      start = m.group(3)
-      fc = zero_indexed(int(chap_start))
-      if not start:
-        if not chap_end:
-          return self.book.children()[fc]
-        else:
-          if int(chap_end) > len(self.book.children()):
-            raise InvalidReferenceError()
-          return ChapterRange(
-              self.book.children()[fc:int(chap_end)])
-      end = m.group(4)
-      chapter = self.book.children()[fc]
-      if not end:
-        # leverage LineRange to extract a line
-        return LineRange(chapter, int(start), int(start)).children()[0]
-      return LineRange(chapter, int(start), int(end))
-    raise UnparsableReferenceError()
+    (text, ref) = bibref.getOneRef(str_ref)
+    return BibleRef(ref)
 
   def top_reference(self):
     return self.book
+
+
+class BibleRef(Reference):
+  """ A single book.
+  """
+  def __init__(self, pretty):
+    print "got pretty", pretty
+    self._pretty = pretty
+
+  def children(self):
+    raise NotImplementedError()
+
+  def pretty(self):
+    return self._pretty
+
+  def text(self):
+    """ Too much text. """
+    raise NotImplementedError()
+
+  def search(self, pattern, first_chapter=None, last_chapter=None, 
+                            first_line=None, last_line=None):
+    raise NotImplementedError()
+
 
 
 class Book(Reference):
