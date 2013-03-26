@@ -19,6 +19,10 @@ x Create a second implementation with a 'simpler' non-view approach
   x ViewImpl
   x ContainerImpl
 
+- load a whole book from JSON
+- put pybible behind pybooks interface
+  - new impl if necessary
+
 Todo
 ----
 
