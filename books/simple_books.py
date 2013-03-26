@@ -64,7 +64,6 @@ class Book(Reference):
   """ A single book.
   """
   def __init__(self, chapters, title=None, author=None):
-    #Reference.__init__(self, resource)
     self.chapters = chapters
     self.author = author
     self.title = title
@@ -159,7 +158,6 @@ class Line(Reference):
   """ A single line.
   """
   def __init__(self, cnum, lnum, line):
-    #Reference.__init__(self, resource)
     self.line = line
     self.cnum = cnum
     self.lnum = lnum

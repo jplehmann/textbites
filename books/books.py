@@ -188,7 +188,6 @@ class ChapterRange(ReferenceImpl):
     return "Chapter %d-%d" % (first, last)
 
   def text(self):
-    #return self._resource.chapter_text(self._chapter_num, self._first, self._last)
     raise NotImplementedError()
 
   def search(self, pattern):
