@@ -63,7 +63,7 @@ class BookResource(Resource):
           return ChapterRange(self, int(chap_start), int(chap_end))
       end = m.group(4)
       if not end:
-        return LineRange(self, int(chap_start), int(start), int(start))
+        return Line(self, int(chap_start), int(start))
       if int(end) > self.chapter_length(int(chap_start)):
         raise InvalidReferenceError()
       return LineRange(self, int(chap_start), int(start), int(end))
@@ -179,9 +179,8 @@ class ChapterRange(ReferenceImpl):
   def children(self):
     """ Maybe unnecessary?
     """
-    # XXX this is not right
-    #return self._resource.chapters_for_chapter(self._chapter_num)
-    raise NotImplementedError()
+    fc = zero_indexed(self._first)
+    return self._resource.chapters()[fc:self._last]
 
   def pretty(self):
     first = self._first if self._first != None else "*"
@@ -239,11 +238,10 @@ class LineRange(ReferenceImpl):
     assert self._first == None or self._last == None or self._first <= self._last
 
   def children(self):
-    """ Maybe unnecessary?
+    """ Return Line(s) for chapter.
     """
-    # XXX this is not right, because it shouldn't return all lines
-    #return self._resource.lines_for_chapter(self._chapter_num)
-    raise NotImplementedError()
+    return self._resource.lines_for_chapter(self._chapter_num, 
+        self._first, self._last)
 
   def pretty(self):
     first = self._first if self._first != None else "*"

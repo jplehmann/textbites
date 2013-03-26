@@ -27,7 +27,7 @@ class SimpleBookResource(Resource):
     return SimpleBookResource(Book(chapters, title, author))
 
   def __init__(self, book):
-    """ Chapters should be a list of list of strings.
+    """ Stores only the top reference.
     """
     self.book = book
 
@@ -42,7 +42,7 @@ class SimpleBookResource(Resource):
       fc = zero_indexed(int(chap_start))
       if not start:
         if not chap_end:
-          return Chapter(int(chap_start), int(chap_start))
+          return self.book.children()[fc]
         else:
           if int(chap_end) > len(self.book.children()):
             raise InvalidReferenceError()
@@ -51,7 +51,8 @@ class SimpleBookResource(Resource):
       end = m.group(4)
       chapter = self.book.children()[fc]
       if not end:
-        return LineRange(chapter, int(start), int(start))
+        # leverage LineRange to extract a line
+        return LineRange(chapter, int(start), int(start)).children()[0]
       return LineRange(chapter, int(start), int(end))
     raise UnparsableReferenceError()
 
@@ -97,8 +98,6 @@ class ChapterRange(Reference):
     return self.chapters
 
   def pretty(self):
-    for c in self.chapters:
-        print c.pretty()
     return "Chapter %d-%d" % (self.chapters[0].num, self.chapters[-1].num)
 
   def text(self):
@@ -143,7 +142,7 @@ class LineRange(Reference):
     self.end = end
 
   def children(self):
-    return self.chapters
+    return self.chapter.children()[zero_indexed(self.start):self.end]
 
   def pretty(self):
     s = self.chapter.pretty() + ":%d" % self.start
@@ -166,7 +165,6 @@ class Line(Reference):
     self.lnum = lnum
 
   def children(self):
-    # TODO
     raise NotImplementedError()
 
   def pretty(self):
@@ -176,8 +174,6 @@ class Line(Reference):
     return self.line
 
   def search(self, pattern):
-    # TODO
-    #return self._resource.search(pattern)
     if re.search(pattern, self.line):
       return self
     return None
