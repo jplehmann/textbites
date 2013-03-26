@@ -93,27 +93,30 @@ class TestInterface():
     self.assertEquals(len(one_line.text()), 128)
 
   def test_reference_book(self):
-    book = self.res.top_reference()
-    self.assertIsInstance(book, Reference)
+    ref = self.res.top_reference()
+    self.assertIsInstance(ref, Reference)
     # cannot get text on a book
-    self.assertRaises(NotImplementedError, book.text)
-    chaps = book.children()
-    self.assertEquals(len(chaps), 3)
+    self.assertRaises(NotImplementedError, ref.text)
+    self.assertEquals(len(ref.children()), 3)
+    self.assertEquals(ref.children()[1].pretty(), "Chapter 2")
 
   def test_reference_chapter(self):
     ref = self.res.reference("3")
     self.assertIsInstance(ref, Reference)
     self.assertEquals(len(ref.children()), 7)
+    self.assertEquals(ref.children()[1].pretty(), "Chapter 3:2")
 
   def test_reference_chapter_group(self):
     ref = self.res.reference("2-3")
     self.assertIsInstance(ref, Reference)
     self.assertEquals(len(ref.children()), 2)
+    self.assertEquals(ref.children()[1].pretty(), "Chapter 3")
 
   def test_reference_line_group(self):
     ref = self.res.reference("2:2-5")
     self.assertIsInstance(ref, Reference)
     self.assertEquals(len(ref.children()), 4)
+    self.assertEquals(ref.children()[1].pretty(), "Chapter 2:3")
 
   def test_reference_line(self):
     ref = self.res.reference("2:2")
