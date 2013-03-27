@@ -4,7 +4,10 @@ Adapt Bible API into that which pybooks expects.
 """
 import re
 
-from api import Reference, Resource, UnparsableReferenceError, InvalidReferenceError
+from api import Reference
+from api import Resource
+#from api import UnparsableReferenceError
+from api import InvalidReferenceError
 from .utils import *
 
 from pybible.loader import loader
@@ -29,6 +32,7 @@ class BibleResource(Resource):
     """ Parse this string reference and return an object. 
     """
     (text, ref) = bibref.getOneRef(str_ref)
+    print text, ref
     return BibleRef(ref)
 
   def top_reference(self):

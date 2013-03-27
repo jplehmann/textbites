@@ -2,7 +2,6 @@
 """
 Test functionality of books.
 """
-
 import os
 import os.path
 import json

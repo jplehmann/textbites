@@ -1,9 +1,7 @@
-
 #!/usr/bin/env python
 """
 Test functionality of books.
 """
-
 import unittest
 
 from test_books_base import TestInterface
