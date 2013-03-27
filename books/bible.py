@@ -30,10 +30,13 @@ class BibleResource(Resource):
 
   def reference(self, str_ref):
     """ Parse this string reference and return an object. 
+    Note: this only handles a single reference, and since chapter
+    ranges are handled as separate refs, only the first is returned.
     """
     (text, ref) = bibref.getOneRef(str_ref)
-    print text, ref
-    return BibleRef(ref)
+    print "here3:", ref.getVerseNums()
+    str_ref = str(ref)
+    return BibleRef(str_ref)
 
   def top_reference(self):
     return self.book
@@ -43,7 +46,6 @@ class BibleRef(Reference):
   """ A single book.
   """
   def __init__(self, pretty):
-    print "got pretty", pretty
     self._pretty = pretty
 
   def children(self):

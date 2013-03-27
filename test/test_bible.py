@@ -28,10 +28,10 @@ class TestBibleBooksImpl(unittest.TestCase):
     ref = self.res.reference("jn 3:16")
     self.assertEquals(ref.pretty(), "John 3:16")
 
-  def test_two(self):
+  def test_chapter_range(self):
     ref = self.res.reference("jn 3-4")
-    print ref
-    self.assertEquals(ref.pretty(), "John 3-4")
+    # NOTE: currently only returns first in a range
+    self.assertEquals(ref.pretty(), "John 3")
 
 
       
