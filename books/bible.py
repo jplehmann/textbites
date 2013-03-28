@@ -34,7 +34,6 @@ class BibleResource(Resource):
     ranges are handled as separate refs, only the first is returned.
     """
     (text, ref) = bibref.getOneRef(str_ref)
-    print "here3:", ref.getVerseNums()
     str_ref = str(ref)
     return BibleRef(str_ref)
 
