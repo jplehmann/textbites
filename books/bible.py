@@ -1,6 +1,17 @@
 #! /usr/bin/env python
 """
 Adapt Bible API into that which pybooks expects.
+
+reference
+  can largely delegate to  pybible
+
+will i have different objects depening onw hat got parsed?
+- need to rcognize different types of refs
+- need to be able to go through children
+
+
+
+
 """
 import re
 
@@ -34,7 +45,14 @@ class BibleResource(Resource):
     ranges are handled as separate refs, only the first is returned.
     """
     (text, ref) = bibref.getOneRef(str_ref)
+    # TODO: currently doesn't handle ranges because
+    # it splits those up into multiple references
+    print "types:", str_ref, type(ref)
     str_ref = str(ref)
+    print ref.book
+    print ref.chapter
+    print ref.verseNums
+    print ref.range
     return BibleRef(str_ref)
 
   def top_reference(self):
