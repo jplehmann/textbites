@@ -36,24 +36,24 @@ class SimpleBookResource(Resource):
     """
     m = re.match("(?:[Cc]hapter ?)?(\d+)(?:-(\d+))?(?::(\d+)(?:-(\d+))?)?", str_ref)
     if m:
-      chap_start = m.group(1)
-      chap_end = m.group(2)
-      start = m.group(3)
-      fc = zero_indexed(int(chap_start))
+      chap_start = safe_int(m.group(1))
+      chap_end = safe_int(m.group(2))
+      start = safe_int(m.group(3))
+      fc = zero_indexed(chap_start)
       if not start:
         if not chap_end:
           return self.book.children()[fc]
         else:
-          if int(chap_end) > len(self.book.children()):
+          if chap_end > len(self.book.children()):
             raise InvalidReferenceError()
           return ChapterRange(
-              self.book.children()[fc:int(chap_end)])
+              self.book.children()[fc:chap_end])
       end = m.group(4)
       chapter = self.book.children()[fc]
       if not end:
         # leverage LineRange to extract a line
-        return LineRange(chapter, int(start), int(start)).children()[0]
-      return LineRange(chapter, int(start), int(end))
+        return LineRange(chapter, start, start).children()[0]
+      return LineRange(chapter, start, end)
     raise UnparsableReferenceError()
 
   def top_reference(self):

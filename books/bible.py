@@ -10,8 +10,6 @@ will i have different objects depening onw hat got parsed?
 - need to be able to go through children
 
 
-
-
 """
 import re
 
@@ -44,16 +42,51 @@ class BibleResource(Resource):
     Note: this only handles a single reference, and since chapter
     ranges are handled as separate refs, only the first is returned.
     """
-    (text, ref) = bibref.getOneRef(str_ref)
-    # TODO: currently doesn't handle ranges because
-    # it splits those up into multiple references
-    print "types:", str_ref, type(ref)
-    str_ref = str(ref)
-    print ref.book
-    print ref.chapter
-    print ref.verseNums
-    print ref.range
-    return BibleRef(str_ref)
+    # TODO: reuse this across 3 implementations by passing in a 
+    # classname? or factory to produce the objects
+    #(text, ref) = bibref.getOneRef(str_ref)
+    ## TODO: currently doesn't handle ranges because
+    ## it splits those up into multiple references
+    #print "types:", str_ref, type(ref)
+    #str_ref = str(ref)
+    #print ref.book
+    #print ref.chapter
+    #print ref.verseNums
+    #print ref.range
+    #return BibleRef(str_ref)
+    m = re.match("((?:(?:\d) )?\w+?) (\d+)(?:-(\d+))?(?::(\d+)(?:-(\d+))?)?", str_ref)
+    if m:
+      book_name = m.group(1)
+      chap_start = safe_int(m.group(2))
+      chap_end = safe_int(m.group(3))
+      start = safe_int(m.group(4))
+      end = safe_int(m.group(5))
+      print "--"
+      book = bibref.normalizeBook(book_name)
+      # TODO: in future when getting ref maybe
+      # don't get actual book?
+      if book == None
+        raise UnparsableReferenceError()
+      #print book, realBook.getName()
+      #print chap_start
+      #print chap_end
+      #print start
+      #print end
+      #print "--"
+      if not start:
+        if not chap_end:
+          return book.getChapter(chap_start)
+        else:
+          if chap_end > book.getNumChapters():
+            raise InvalidReferenceError()
+          return ChapterRange(book, chap_start, chap_end)
+      chapter = book.getChapter(chap_start)
+      if not end:
+        # leverage LineRange to extract a line
+        return LineRange(chapter, start, start) #??? .children()[0]
+      return LineRange(chapter, start, end)
+    raise UnparsableReferenceError()
+
 
   def top_reference(self):
     return self.book

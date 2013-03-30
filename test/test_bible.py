@@ -31,21 +31,33 @@ class TestBibleBooksImpl(unittest.TestCase):
   def setUp(self):
     self.res = BibleResource.load_default()
 
+  def test_test(self):
+    ref = self.res.reference("jn 3:16")
+    ref = self.res.reference("1 jn 3:16")
+    ref = self.res.reference("1 jn 3:16-17")
+    ref = self.res.reference("1 jn 3-4")
+    ref = self.res.reference("1 asdf 3-4")
+    #self.assertEquals(ref.pretty(), "John 3:16")
+
+  @unittest.skip
   def test_one(self):
     ref = self.res.reference("jn 3:16")
     self.assertEquals(ref.pretty(), "John 3:16")
 
+  @unittest.skip
   def test_whole_book(self):
     ref = self.res.reference("jn")
     # NOTE: currently only returns first in a range
     # doesn't handle whole chapters
     self.assertEquals(ref.pretty(), "John")
 
+  @unittest.skip
   def test_chapter_range(self):
     ref = self.res.reference("jn 3-4")
     # NOTE: currently only returns first in a range
     self.assertEquals(ref.pretty(), "John 3")
 
+  @unittest.skip
   def test_bible_reference_parsing(self):
     #ref = newBibleReferences("jn 3:16")
     #bibleTexts = parseBibleReferences("jn 3:16")
@@ -53,6 +65,7 @@ class TestBibleBooksImpl(unittest.TestCase):
     bt = bibleTexts[0]
     self.assertEquals(str(bt.reference), "John 3:16")
 
+  @unittest.skip
   def test_bible_direct_lookup(self):
     # From bibref.BibleText.
       # given a BibleReference, returns a string of content?
