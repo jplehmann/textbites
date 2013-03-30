@@ -5,13 +5,15 @@ Test functionality of books.
 import unittest
 import logging
 
+#from test_simple_books import TestSimpleBooksImpl
+
 #from test_books_base import TestInterface
 from books.bible import BibleResource
 
 
 logging.basicConfig(level=logging.WARN, format='%(name)s: %(message)s')
 
-#class TestBibleBooksImpl(TestInterface, unittest.TestCase):
+#class TestBibleBooksImpl(TestSimpleBooksImpl, unittest.TestCase):
 class TestBibleBooksImpl(unittest.TestCase):
   """ Create the implementation-specific system under test which 
   is the Resource.
@@ -33,6 +35,9 @@ class TestBibleBooksImpl(unittest.TestCase):
     self.assertEquals(bible.children()[0].title, "Genesis")
     self.assertEquals(bible.children()[-1].title, "Revelation")
 
+  def test_parse_reference(self):
+    ref = self.res.reference("jn 3:16")
+    self.assertEquals(ref.pretty(), "John 3:16")
 
   """
 TODO: Move to bible project
