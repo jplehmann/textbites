@@ -82,29 +82,21 @@ class BibleResource(Resource):
       chap_end = safe_int(m.group(3))
       start = safe_int(m.group(4))
       end = safe_int(m.group(5))
-      print "--"
-      book = bibleapi.normalize_book(book_name)
-      # TODO: in future when getting ref maybe
-      # don't get actual book?
-      if book == None:
+      bname = bibleapi.normalize_book_name(book_name)
+      if bname == None:
         raise UnparsableReferenceError()
-      #print book, realBook.getName()
-      #print chap_start
-      #print chap_end
-      #print start
-      #print end
-      #print "--"
       if not start:
         if not chap_end:
-          return book.getChapter(chap_start)
+          return xx book.getChapter(chap_start)
         else:
-          if chap_end > book.getNumChapters():
+          if chap_end > xx book.getNumChapters():
             raise InvalidReferenceError()
-          return ChapterRange(book, chap_start, chap_end)
-      chapter = book.getChapter(chap_start)
+          return ChapterRange(xx book, chap_start, chap_end)
+      # simple excepts an array of line strings
+      chapter = xx book.getChapter(chap_start).getVerseList()
       if not end:
         # leverage LineRange to extract a line
-        return LineRange(chapter, start, start) #??? .children()[0]
+        return LineRange(chapter, start, start).children()[0]
       return LineRange(chapter, start, end)
     raise UnparsableReferenceError()
 

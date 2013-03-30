@@ -91,6 +91,8 @@ class ChapterRange(Reference):
   """ A range of chapters.
   """
   def __init__(self, chapters):
+    """ chapters is an array of Chapter objects.
+    """
     self.chapters = chapters
 
   def children(self):
@@ -134,6 +136,8 @@ class LineRange(Reference):
   """ A range of lines.
   """
   def __init__(self, chapter, start, end):
+    """ chpater is a Chapter object.
+    """
     if end > len(chapter.children()):
       raise InvalidReferenceError()
     self.chapter = chapter

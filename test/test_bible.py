@@ -10,6 +10,9 @@ import logging
 #from test_books_base import TestInterface
 from books.bible import BibleResource
 
+# TODO remove this
+from pybible import data
+
 
 logging.basicConfig(level=logging.WARN, format='%(name)s: %(message)s')
 
@@ -19,25 +22,36 @@ class TestBibleBooksImpl(unittest.TestCase):
   is the Resource.
   """
 
-  @classmethod
-  def setUpClass(cls):
-    BibleResource.init()
+  #@classmethod
+  #def setUpClass(cls):
+  #  BibleResource.init()
 
-  def setUp(self):
-    self.res = BibleResource.default_with_simple()
+  #def setUp(self):
+  #  self.res = BibleResource.default_with_simple()
 
-  def test_load_simple_adapter(self):
-    print len(self.res.top_reference().children())
+  #def test_load_simple_adapter(self):
+  #  print len(self.res.top_reference().children())
 
-  def test_first_and_last_books(self):
-    bible = self.res.top_reference()
-    self.assertEquals(len(bible.children()), 66)
-    self.assertEquals(bible.children()[0].title, "Genesis")
-    self.assertEquals(bible.children()[-1].title, "Revelation")
+  #def test_first_and_last_books(self):
+  #  bible = self.res.top_reference()
+  #  self.assertEquals(len(bible.children()), 66)
+  #  self.assertEquals(bible.children()[0].title, "Genesis")
+  #  self.assertEquals(bible.children()[-1].title, "Revelation")
 
-  def test_parse_reference(self):
-    ref = self.res.reference("jn 3:16")
-    self.assertEquals(ref.pretty(), "John 3:16")
+  #@unittest.skip
+  #def test_parse_reference(self):
+  #  ref = self.res.reference("jn 3:16")
+  #  self.assertEquals(ref.pretty(), "John 3:16")
+
+  # TODO: move these into Bible project
+  def test_normalize_book_name(self):
+    self.assertEquals(data.normalize_book_name("John"), "John")
+    self.assertEquals(data.normalize_book_name("jn"), "John")
+    self.assertEquals(data.normalize_book_name("jN"), "John")
+    self.assertEquals(data.normalize_book_name("1jn"), "1 John")
+    self.assertEquals(data.normalize_book_name("1jn"), "1 John")
+    self.assertEquals(data.normalize_book_name("mk"), "Mark")
+
 
   """
 TODO: Move to bible project
