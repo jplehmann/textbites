@@ -19,23 +19,44 @@ from api import Resource
 from api import InvalidReferenceError
 from .utils import *
 
-from pybible.loader import loader
-from pybible import bibref
+from .simple_books import Book, ChapterRange, Chapter, LineRange, Line
+
+from pybible import api as bibleapi
 
 
 class BibleResource(Resource):
 
   @staticmethod
   def init():
-    loader.init()
+    bibleapi.init()
 
   @staticmethod
-  def load_default():
-    return BibleResource()
+  def default_with_simple():
+    """ Load the pybible.Bible into SimpleBook data structures.
+    """
+    bible = bibleapi.get_bible()
+    new_books = []
+    # this returns book names in order -- and assumes 
+    # this implementation has them.
+    for book_name in bibleapi.all_book_names():
+      book = bible.getBook(book_name)
+      new_chapters = []
+      for cnum in xrange(1, book.getNumChapters()+1):
+        chapter = book.getChapter(cnum)
+        assert cnum == chapter.getNumber()
+        new_lines = []
+        for lnum in xrange(1, chapter.getNumVerses()+1):
+          verse = chapter.getVerse(lnum)
+          assert lnum == verse.getNumber()
+          new_lines.append(Line(cnum, lnum, verse.getText()))
+        new_chapters.append(Chapter(cnum, new_lines))
+      new_books.append(Book(new_chapters, book_name))
+    return BibleResource(Bible(new_books, "default"))
 
-  def __init__(self):
+  def __init__(self, bible):
     """ Stores only the top reference.
     """
+    self.bible = bible
 
   def reference(self, str_ref):
     """ Parse this string reference and return an object. 
@@ -44,7 +65,7 @@ class BibleResource(Resource):
     """
     # TODO: reuse this across 3 implementations by passing in a 
     # classname? or factory to produce the objects
-    #(text, ref) = bibref.getOneRef(str_ref)
+    #(text, ref) = bibleapi.get_one_ref(str_ref)
     ## TODO: currently doesn't handle ranges because
     ## it splits those up into multiple references
     #print "types:", str_ref, type(ref)
@@ -62,10 +83,10 @@ class BibleResource(Resource):
       start = safe_int(m.group(4))
       end = safe_int(m.group(5))
       print "--"
-      book = bibref.normalizeBook(book_name)
+      book = bibleapi.normalize_book(book_name)
       # TODO: in future when getting ref maybe
       # don't get actual book?
-      if book == None
+      if book == None:
         raise UnparsableReferenceError()
       #print book, realBook.getName()
       #print chap_start
@@ -87,22 +108,22 @@ class BibleResource(Resource):
       return LineRange(chapter, start, end)
     raise UnparsableReferenceError()
 
-
   def top_reference(self):
-    return self.book
+    return self.bible
 
 
-class BibleRef(Reference):
-  """ A single book.
+class Bible(Reference):
+  """ 
   """
-  def __init__(self, pretty):
-    self._pretty = pretty
+  def __init__(self, books, version):
+    self.version = version
+    self.books = books
 
   def children(self):
-    raise NotImplementedError()
+    return self.books
 
   def pretty(self):
-    return self._pretty
+    return self.version
 
   def text(self):
     """ Too much text. """
@@ -110,124 +131,6 @@ class BibleRef(Reference):
 
   def search(self, pattern, first_chapter=None, last_chapter=None, 
                             first_line=None, last_line=None):
+    # TODO
     raise NotImplementedError()
-
-
-
-class Book(Reference):
-  """ A single book.
-  """
-  def __init__(self, chapters, title=None, author=None):
-    self.chapters = chapters
-    self.author = author
-    self.title = title
-
-  def children(self):
-    return self.chapters
-
-  def pretty(self):
-    return self.title
-
-  def text(self):
-    """ Too much text. """
-    raise NotImplementedError()
-
-  def search(self, pattern, first_chapter=None, last_chapter=None, 
-                            first_line=None, last_line=None):
-    hits = []
-    fc = zero_indexed(first_chapter)
-    for chap in self.chapters[fc:last_chapter]:
-      hits.extend(chap.search(pattern, first_line, last_line))
-    return hits
-
-
-class ChapterRange(Reference):
-  """ A range of chapters.
-  """
-  def __init__(self, chapters):
-    self.chapters = chapters
-
-  def children(self):
-    return self.chapters
-
-  def pretty(self):
-    return "Chapter %d-%d" % (self.chapters[0].num, self.chapters[-1].num)
-
-  def text(self):
-    raise NotImplementedError()
-
-  def search(self, pattern, first_line=None, last_line=None):
-    hits = []
-    for chap in self.chapters:
-      hits.extend(chap.search(pattern))
-    return hits
-
-
-class Chapter(Reference):
-  """ A single chapter.
-  """
-  def __init__(self, num, lines):
-    self.num = num
-    self.lines = lines 
-
-  def children(self):
-    return self.lines
-
-  def pretty(self):
-    return "Chapter %d" % self.num
-
-  def text(self):
-    return '\n'.join([l.text() for l in self.lines]).strip()
-
-  def search(self, pattern, first_line=None, last_line=None):
-    fl = zero_indexed(first_line)
-    return [l for l in self.lines[fl:last_line] if l.search(pattern)]
-
-
-class LineRange(Reference):
-  """ A range of lines.
-  """
-  def __init__(self, chapter, start, end):
-    if end > len(chapter.children()):
-      raise InvalidReferenceError()
-    self.chapter = chapter
-    self.start = start
-    self.end = end
-
-  def children(self):
-    return self.chapter.children()[zero_indexed(self.start):self.end]
-
-  def pretty(self):
-    s = self.chapter.pretty() + ":%d" % self.start
-    return s if self.start == self.end else s+"-%d" % self.end
-
-  def text(self):
-    raise NotImplementedError()
-
-  def search(self, pattern):
-    return self.chapter.search(pattern, self.start, self.end)
-
-
-class Line(Reference):
-  """ A single line.
-  """
-  def __init__(self, cnum, lnum, line):
-    self.line = line
-    self.cnum = cnum
-    self.lnum = lnum
-
-  def children(self):
-    raise NotImplementedError()
-
-  def pretty(self):
-    return "Chapter %d:%d" % (self.cnum, self.lnum)
-
-  def text(self):
-    return self.line
-
-  def search(self, pattern):
-    if re.search(pattern, self.line):
-      return self
-    return None
-
 

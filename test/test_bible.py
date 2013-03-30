@@ -8,15 +8,8 @@ import logging
 #from test_books_base import TestInterface
 from books.bible import BibleResource
 
-from pybible.bibref import BibleReference
-#from pybible.bibref import newBibleReferences
-from pybible.bibref import newBibleText
-from pybible.loader import loader
-from pybible import data
-
 
 logging.basicConfig(level=logging.WARN, format='%(name)s: %(message)s')
-TRANS = data.DEFAULT_VERSION
 
 #class TestBibleBooksImpl(TestInterface, unittest.TestCase):
 class TestBibleBooksImpl(unittest.TestCase):
@@ -29,8 +22,27 @@ class TestBibleBooksImpl(unittest.TestCase):
     BibleResource.init()
 
   def setUp(self):
-    self.res = BibleResource.load_default()
+    self.res = BibleResource.default_with_simple()
 
+  def test_load_simple_adapter(self):
+    print len(self.res.top_reference().children())
+
+  def test_first_and_last_books(self):
+    bible = self.res.top_reference()
+    self.assertEquals(len(bible.children()), 66)
+    self.assertEquals(bible.children()[0].title, "Genesis")
+    self.assertEquals(bible.children()[-1].title, "Revelation")
+
+
+  """
+TODO: Move to bible project
+#from pybible.bibref import BibleReference
+#from pybible.bibref import newBibleReferences
+#from pybible.bibref import newBibleText
+#from pybible.loader import loader
+#from pybible import data
+TRANS = data.DEFAULT_VERSION
+  @unittest.skip
   def test_test(self):
     ref = self.res.reference("jn 3:16")
     ref = self.res.reference("1 jn 3:16")
@@ -74,7 +86,4 @@ class TestBibleBooksImpl(unittest.TestCase):
     ref = BibleReference("John", 3, [16], TRANS)
     text = loader.getTranslationText(ref, TRANS)
     self.assertRegexpMatches(text, "so loved the world")
-
-
-      
-
+  """
