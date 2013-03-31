@@ -49,7 +49,7 @@ class BookResource(Resource):
   def reference(self, str_ref):
     """ Parse this string reference and return an object. 
     """
-    m = re.match("(?:[Cc]hapter ?)?(\d+)(?:-(\d+))?(?::(\d+)(?:-(\d+))?)?", str_ref)
+    m = re.match("(?:(?:\w+ )*\w+ ?)?(\d+)(?:-(\d+))?(?::(\d+)(?:-(\d+))?)?", str_ref)
     if m:
       chap_start = m.group(1)
       chap_end = m.group(2)
@@ -75,6 +75,9 @@ class BookResource(Resource):
     """ Produce Book reference.
     """
     return Book(self)
+
+  def title(self):
+    return self._title
     
   def chapters(self):
     """ Produce list of Chapter reference.
@@ -187,7 +190,7 @@ class ChapterRange(ReferenceImpl):
   def pretty(self):
     first = self._first if self._first != None else "*"
     last = self._last if self._last != None else "*"
-    return "Chapter %d-%d" % (first, last)
+    return self._resource.title() + " %d-%d" % (first, last)
 
   def text(self):
     raise NotImplementedError()
@@ -208,7 +211,7 @@ class Chapter(ReferenceImpl):
     return self._resource.lines_for_chapter(self._chapter_num)
 
   def pretty(self):
-    return "Chapter %d" % self._chapter_num
+    return self._resource.title() + " %d" % self._chapter_num
 
   def text(self):
     return self._resource.chapter_text(self._chapter_num)
@@ -247,7 +250,7 @@ class LineRange(ReferenceImpl):
   def pretty(self):
     first = self._first if self._first != None else "*"
     last = self._last if self._last != None else "*"
-    s = "Chapter %d:%d" % (self._chapter_num, first)
+    s = self._resource.title() + " %d:%d" % (self._chapter_num, first)
     return s if first == last else s + "-%d" % last
 
   def text(self):
