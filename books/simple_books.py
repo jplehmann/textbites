@@ -16,28 +16,27 @@ class SimpleBookResource(Resource):
     """ Create a resource from json data.
         Assumes title, author, chapters/text
     """
-    res = SimpleBookResource()
     chapters = []
+    book = "Chapter"
     for cnum, chapter in enumerate(data.get("chapters"), 1):
       lines = []
       for lnum, line in enumerate(chapter.get("text").split('\n'), 1):
-        lines.append(Line(res, cnum, lnum, line))
-      chapters.append(Chapter(res, cnum, lines))
+        lines.append(Line(book, cnum, lnum, line))
+      chapters.append(Chapter(book, cnum, lines))
     title = data.get("title")
     author = data.get("author")
-    res.book = Book(res, chapters, title, author)
-    return res
+    return SimpleBookResource(Book(chapters, title, author))
 
-  def __init__(self, book=None):
+  def __init__(self, book):
     """ Stores only the top reference.
     """
-    # Needs book to be set, now or later!
     self.book = book
 
   def reference(self, str_ref):
     """ Parse this string reference and return an object. 
     """
     m = re.match("(?:[Cc]hapter ?)?(\d+)(?:-(\d+))?(?::(\d+)(?:-(\d+))?)?", str_ref)
+    book = "Chapter"
     if m:
       chap_start = safe_int(m.group(1))
       chap_end = safe_int(m.group(2))
@@ -50,37 +49,36 @@ class SimpleBookResource(Resource):
         else:
           if chap_end > len(self.book.children()):
             raise InvalidReferenceError()
-          return ChapterRange(
+          return ChapterRange(book,
               self.book.children()[fc:chap_end])
       chapter = self.book.children()[fc]
       if not end:
         # leverage LineRange to extract a line
-        return LineRange(chapter, start, start).children()[0]
-      return LineRange(chapter, start, end)
+        return LineRange(book, chapter, start, start).children()[0]
+      return LineRange(book, chapter, start, end)
     raise UnparsableReferenceError()
 
   def top_reference(self):
     return self.book
 
 
-class ReferenceImpl(Reference):
-  """ Represents some section of text.
-  """
-  def __init__(self, resource):
-    self._resource = resource
+#class ReferenceImpl(Reference):
+#  """ Represents some section of text.
+#  """
+#  def __init__(self, resource):
+#    self._resource = resource
+#
+#  def ref_prefix(self):
+#    try:
+#      return self._resource.top_reference().title
+#    except Exception:
+#      return "Chapter"
 
-  def ref_prefix(self):
-    try:
-      return self._resource.top_reference().title
-    except Exception:
-      return "Chapter"
 
-
-class Book(ReferenceImpl):
+class Book(Reference):
   """ A single book.
   """
-  def __init__(self, resource, chapters, title=None, author=None):
-    ReferenceImpl.__init__(self, resource)
+  def __init__(self, chapters, title=None, author=None):
     self.chapters = chapters
     self.author = author
     self.title = title
@@ -104,13 +102,13 @@ class Book(ReferenceImpl):
     return hits
 
 
-class ChapterRange(ReferenceImpl):
+class ChapterRange(Reference):
   """ A range of chapters.
   """
-  def __init__(self, resource, chapters):
+  def __init__(self, book, chapters):
     """ chapters is an array of Chapter objects.
     """
-    ReferenceImpl.__init__(self, resource)
+    self.book = book 
     self.chapters = chapters
 
   def children(self):
@@ -118,7 +116,7 @@ class ChapterRange(ReferenceImpl):
 
   def pretty(self):
     return "%s %d-%d" % (
-        self.ref_prefix(), self.chapters[0].num, self.chapters[-1].num)
+        self.book, self.chapters[0].num, self.chapters[-1].num)
 
   def text(self):
     raise NotImplementedError()
@@ -130,11 +128,11 @@ class ChapterRange(ReferenceImpl):
     return hits
 
 
-class Chapter(ReferenceImpl):
+class Chapter(Reference):
   """ A single chapter.
   """
-  def __init__(self, resource, num, lines):
-    ReferenceImpl.__init__(self, resource)
+  def __init__(self, book, num, lines):
+    self.book = book
     self.num = num
     self.lines = lines 
 
@@ -142,7 +140,7 @@ class Chapter(ReferenceImpl):
     return self.lines
 
   def pretty(self):
-    return "%s %d" % (self.ref_prefix(), self.num)
+    return "%s %d" % (self.book, self.num)
 
   def text(self):
     return '\n'.join([l.text() for l in self.lines]).strip()
@@ -152,15 +150,15 @@ class Chapter(ReferenceImpl):
     return [l for l in self.lines[fl:last_line] if l.search(pattern)]
 
 
-class LineRange(ReferenceImpl):
+class LineRange(Reference):
   """ A range of lines.
   """
-  def __init__(self, resource, chapter, start, end):
-    """ chpater is a Chapter object.
+  def __init__(self, book, chapter, start, end):
+    """ chapter is a Chapter object.
     """
-    ReferenceImpl.__init__(self, resource)
     if end > len(chapter.children()):
       raise InvalidReferenceError("%d > the # chapters" % end)
+    self.book = book
     self.chapter = chapter
     self.start = start
     self.end = end
@@ -179,11 +177,11 @@ class LineRange(ReferenceImpl):
     return self.chapter.search(pattern, self.start, self.end)
 
 
-class Line(ReferenceImpl):
+class Line(Reference):
   """ A single line.
   """
-  def __init__(self, resource, cnum, lnum, line):
-    ReferenceImpl.__init__(self, resource)
+  def __init__(self, book, cnum, lnum, line):
+    self.book = book
     self.line = line
     self.cnum = cnum
     self.lnum = lnum
@@ -192,7 +190,7 @@ class Line(ReferenceImpl):
     raise NotImplementedError()
 
   def pretty(self):
-    return "%s %d:%d" % (self.ref_prefix(), self.cnum, self.lnum)
+    return "%s %d:%d" % (self.book, self.cnum, self.lnum)
 
   def text(self):
     return self.line

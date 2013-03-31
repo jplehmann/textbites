@@ -34,7 +34,6 @@ class BibleResource(Resource):
   def default_with_simple():
     """ Load the pybible.Bible into SimpleBook data structures.
     """
-    res = BibleResource()
     bible = bibleapi.get_bible()
     new_books = []
     # this returns book names in order -- and assumes 
@@ -49,13 +48,12 @@ class BibleResource(Resource):
         for lnum in xrange(1, chapter.getNumVerses()+1):
           verse = chapter.getVerse(lnum)
           assert lnum == verse.getNumber()
-          new_lines.append(Line(res, cnum, lnum, verse.getText()))
-        new_chapters.append(Chapter(res, cnum, new_lines))
-      new_books.append(Book(res, new_chapters, book_name))
-    res.bible = Bible(res, new_books, "default")
-    return res
+          new_lines.append(Line(book_name, cnum, lnum, verse.getText()))
+        new_chapters.append(Chapter(book_name, cnum, new_lines))
+      new_books.append(Book(new_chapters, book_name))
+    return BibleResource(Bible(new_books, "default"))
 
-  def __init__(self, bible=None):
+  def __init__(self, bible):
     """ Stores only the top reference.
     """
     # Needs book to be set, now or later!
@@ -100,13 +98,13 @@ class BibleResource(Resource):
           if chap_end > len(book.children()):
             raise InvalidReferenceError()
           return ChapterRange(
-              self, book.children()[fc:chap_end])
+              book_name, book.children()[fc:chap_end])
       chapter = book.children()[fc]
       if not end:
         # leverage LineRange to extract a line
-        return LineRange(self, chapter, start, start).children()[0]
+        return LineRange(book_name, chapter, start, start).children()[0]
       print start,end, type(start), type(end)
-      return LineRange(self, chapter, start, end)
+      return LineRange(book_name, chapter, start, end)
     raise UnparsableReferenceError()
     #  if not start:
     #    if not chap_end:
@@ -127,13 +125,10 @@ class BibleResource(Resource):
     return self.bible
 
 
-from simple_books import ReferenceImpl
-
-class Bible(ReferenceImpl):
+class Bible():
   """ 
   """
-  def __init__(self, resource, books, version):
-    ReferenceImpl.__init__(self, resource)
+  def __init__(self, books, version):
     self.version = version
     self.books = books
 
