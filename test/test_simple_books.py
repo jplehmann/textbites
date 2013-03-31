@@ -5,7 +5,7 @@ Test functionality of books.
 import unittest
 
 from test_books_base import TestInterface
-from books.simple_books import SimpleBookResource
+from pybooks.simple_books import SimpleBookResource
 
 
 class TestSimpleBooksImpl(TestInterface, unittest.TestCase):

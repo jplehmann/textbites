@@ -5,8 +5,8 @@ Test functionality of books.
 
 import unittest
 
-from books.api import Resource
-from books import library as Library
+from pybooks.api import Resource
+from pybooks import library as Library
 
 class TestLibrary(unittest.TestCase):
 

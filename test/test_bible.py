@@ -8,7 +8,7 @@ import logging
 import test_simple_books
 
 #from test_books_base import TestInterface
-from books.bible import BibleResource
+from pybooks.bible import BibleResource
 
 # TODO remove this
 from pybible import data

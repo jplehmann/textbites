@@ -8,9 +8,6 @@ _resources = {}
 
 
 import os.path
-from ..books import SimpleBookResource
-add("TEST1", SimpleBookResource.from_json(
-  os.path.join(os.path.dirname(__file__), "../data/pp-sample.json")))
 
 
 def list():
@@ -27,3 +24,12 @@ def add(name, resource):
   """ Add item to the library.
   """
   _resources[name] = resource
+
+
+from pybooks.simple_books import SimpleBookResource
+import json
+TEST1 = json.load(
+    open(os.path.join(os.path.dirname(__file__), "../data/pp-sample.json")))
+add("TEST1", SimpleBookResource.from_json(TEST1))
+
+
