@@ -81,7 +81,7 @@ class TestInterface():
     self.assertIsInstance(c3, Reference)
     #self.assertIsInstance(c3, Chapter)
     self.assertEquals(c3.pretty(), "Chapter 3")
-    self.assertEquals(len(c3.text()), 817)
+    self.assertEquals(len(c3.text()), 815)
 
     lines = c3.children()
     self.assertEquals(len(lines), 7)

@@ -24,7 +24,7 @@ class SimpleBookResource(Resource):
     for cnum, chapter in enumerate(data.get("chapters"), 1):
       lines = []
       for lnum, line in enumerate(chapter.get("text").split('\n'), 1):
-        lines.append(Line(book, cnum, lnum, line))
+        lines.append(Line(book, cnum, lnum, line.strip()))
       chapters.append(Chapter(book, cnum, lines))
     title = data.get("title")
     author = data.get("author")

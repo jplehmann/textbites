@@ -5,7 +5,7 @@ Test functionality of books.
 import unittest
 import logging
 
-#from test_simple_books import TestSimpleBooksImpl
+import test_simple_books
 
 #from test_books_base import TestInterface
 from books.bible import BibleResource
@@ -16,7 +16,7 @@ from pybible import data
 
 logging.basicConfig(level=logging.DEBUG, format='%(name)s: %(message)s')
 
-#class TestBibleBooksImpl(TestSimpleBooksImpl, unittest.TestCase):
+#class TestBibleBooksImpl(test_simple_books.TestSimpleBooksImpl, unittest.TestCase):
 class TestBibleBooksImpl(unittest.TestCase):
   """ Create the implementation-specific system under test which 
   is the Resource.
@@ -48,6 +48,15 @@ class TestBibleBooksImpl(unittest.TestCase):
     # ChapterRange
     ref = self.res.reference("jn 3-4")
     self.assertEquals(ref.pretty(), "John 3-4")
+
+  def test_search(self):
+    ref = self.res.reference("jn 3")
+    hits = ref.search("love")
+    hit_refs = [h.pretty() for h in hits]
+    self.assertEquals(len(hit_refs), 3)
+    self.assertTrue("John 3:16" in hit_refs)
+    self.method()
+
 
   ## TODO: move these into Bible project
   #def test_normalize_book_name(self):

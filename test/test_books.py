@@ -32,27 +32,27 @@ class TestBooksImpl(TestInterface, unittest.TestCase):
     chaps = self.res.chapters()
     c3 = chaps[2]
     text = self.res.chapter_text(c3.num())
-    self.assertEquals(len(text), 817)
+    self.assertEquals(len(text), 815)
 
   def test_chapter_text_for_whole_chapter_from_one(self):
     chaps = self.res.chapters()
     c3 = chaps[2]
     text = self.res.chapter_text(c3.num(), first_line=1)
-    self.assertEquals(len(text), 817)
+    self.assertEquals(len(text), 815)
 
   def test_chapter_text_for_whole_chapter_to_last(self):
     chaps = self.res.chapters()
     c3 = chaps[2]
     last = self.res.chapter_length(c3.num())
     text = self.res.chapter_text(c3.num(), last_line=last)
-    self.assertEquals(len(text), 817)
+    self.assertEquals(len(text), 815)
 
   def test_chapter_text_for_whole_chapter_from_first_to_last(self):
     chaps = self.res.chapters()
     c3 = chaps[2]
     last = self.res.chapter_length(c3.num())
     text = self.res.chapter_text(c3.num(), first_line=1, last_line=last)
-    self.assertEquals(len(text), 817)
+    self.assertEquals(len(text), 815)
 
   def test_lines_for_chapter_whole_chapter(self):
     lines = self.res.lines_for_chapter(3)

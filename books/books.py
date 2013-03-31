@@ -35,7 +35,7 @@ class BookResource(Resource):
     author = data.get("author")
     chapters = []
     for chapter in data.get("chapters"):
-      lines = chapter.get("text").split('\n')
+      lines = [l.strip() for l in chapter.get("text").split('\n')]
       chapters.append(lines)
     return BookResource(title, author, chapters)
 

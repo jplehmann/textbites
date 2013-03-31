@@ -10,9 +10,11 @@ Todo
 ----
 - pybible behind pybooks interface
   x load into simple books impl
-  o parse references
+  x parse references
 - bible -- use main tests
   - make it load its own data not text fixture data
+
+  - implement search for Bible
 
 Done
 ----

@@ -152,6 +152,8 @@ class Bible():
 
   def search(self, pattern, first_chapter=None, last_chapter=None, 
                             first_line=None, last_line=None):
-    # TODO
-    raise NotImplementedError()
+    hits = []
+    for book in self.books:
+      hits.extend(book.search(pattern, first_line, last_line))
+    return hits
 
