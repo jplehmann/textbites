@@ -121,7 +121,7 @@ class TestInterface():
   def test_reference_line(self):
     ref = self.res.reference("2:2")
     self.assertIsInstance(ref, Reference)
-    self.assertRaises(NotImplementedError, ref.children)
+    self.assertEquals(ref.children(), None)
 
 #}}}
 
@@ -135,7 +135,7 @@ class TestInterface():
     self.assertEquals(hits[0].pretty(), BOOK_NAME + " 1:2")
     self.assertEquals(hits[1].pretty(), BOOK_NAME + " 2:4")
     self.assertEquals(hits[2].pretty(), BOOK_NAME + " 3:1")
-    self.assertRaises(NotImplementedError, hits[0].children)
+    self.assertEquals(hits[0].children(), None)
     self.assertTrue(hits[2].text().startswith("Not all that Mrs."))
     self.assertTrue(hits[2].text().endswith("of Mr. Bingley."))
 

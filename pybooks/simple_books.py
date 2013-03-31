@@ -192,7 +192,7 @@ class Line(Reference):
     self.lnum = lnum
 
   def children(self):
-    raise NotImplementedError()
+    return None
 
   def pretty(self):
     return "%s %d:%d" % (self.book, self.cnum, self.lnum)

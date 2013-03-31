@@ -273,7 +273,7 @@ class Line(LineRange, ReferenceImpl):
   def children(self):
     """ Must raise else will call LineRange resulting in loop.
     """
-    raise NotImplementedError()
+    return None
 
 
 class IllegalSearchError(Exception):
