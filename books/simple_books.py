@@ -20,14 +20,13 @@ class SimpleBookResource(Resource):
         Assumes title, author, chapters/text
     """
     chapters = []
-    book = "Chapter"
+    title = data.get("title")
+    author = data.get("author")
     for cnum, chapter in enumerate(data.get("chapters"), 1):
       lines = []
       for lnum, line in enumerate(chapter.get("text").split('\n'), 1):
-        lines.append(Line(book, cnum, lnum, line.strip()))
-      chapters.append(Chapter(book, cnum, lines))
-    title = data.get("title")
-    author = data.get("author")
+        lines.append(Line(title, cnum, lnum, line.strip()))
+      chapters.append(Chapter(title, cnum, lines))
     return SimpleBookResource(Book(chapters, title, author))
 
   def __init__(self, book):
@@ -38,8 +37,9 @@ class SimpleBookResource(Resource):
   def reference(self, str_ref):
     """ Parse this string reference and return an object. 
     """
-    m = re.match("(?:[Cc]hapter ?)?(\d+)(?:-(\d+))?(?::(\d+)(?:-(\d+))?)?", str_ref)
-    book = "Chapter"
+    m = re.match("(?:(?:\w+ )*\w+ ?)?(\d+)(?:-(\d+))?(?::(\d+)(?:-(\d+))?)?", str_ref)
+    #book_name = "Chapter"
+    book_name = self.book.title
     if m:
       chap_start = safe_int(m.group(1))
       chap_end = safe_int(m.group(2))
@@ -54,13 +54,13 @@ class SimpleBookResource(Resource):
         else:
           if chap_end > len(self.book.children()):
             raise InvalidReferenceError()
-          return ChapterRange(book,
+          return ChapterRange(book_name,
               self.book.children()[fc:chap_end])
       chapter = self.book.children()[fc]
       if not end:
         # leverage LineRange to extract a line
-        return LineRange(book, chapter, start, start).children()[0]
-      return LineRange(book, chapter, start, end)
+        return LineRange(book_name, chapter, start, start).children()[0]
+      return LineRange(book_name, chapter, start, end)
     raise UnparsableReferenceError("Reference didn't match regex.")
 
   def top_reference(self):
