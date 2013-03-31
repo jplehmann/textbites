@@ -4,9 +4,12 @@ An implementation where the actual objects stored are returned to the
 user.
 """
 import re
+import logging
 
 from api import Reference, Resource, UnparsableReferenceError, InvalidReferenceError
 from .utils import *
+
+log = logging.getLogger(__name__)
 
 
 class SimpleBookResource(Resource):

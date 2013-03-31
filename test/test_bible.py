@@ -14,7 +14,7 @@ from books.bible import BibleResource
 from pybible import data
 
 
-logging.basicConfig(level=logging.WARN, format='%(name)s: %(message)s')
+logging.basicConfig(level=logging.DEBUG, format='%(name)s: %(message)s')
 
 #class TestBibleBooksImpl(TestSimpleBooksImpl, unittest.TestCase):
 class TestBibleBooksImpl(unittest.TestCase):
@@ -36,8 +36,18 @@ class TestBibleBooksImpl(unittest.TestCase):
     self.assertEquals(bible.children()[-1].title, "Revelation")
 
   def test_parse_reference(self):
+    # Line
     ref = self.res.reference("jn 3:16")
     self.assertEquals(ref.pretty(), "John 3:16")
+    # LineRange
+    ref = self.res.reference("1 jn 4:2-5")
+    self.assertEquals(ref.pretty(), "1 John 4:2-5")
+    # Chapter
+    ref = self.res.reference("jn 3")
+    self.assertEquals(ref.pretty(), "John 3")
+    # ChapterRange
+    ref = self.res.reference("jn 3-4")
+    self.assertEquals(ref.pretty(), "John 3-4")
 
   ## TODO: move these into Bible project
   #def test_normalize_book_name(self):

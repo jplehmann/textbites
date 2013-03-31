@@ -83,10 +83,11 @@ class BibleResource(Resource):
       chap_end = safe_int(m.group(3))
       start = safe_int(m.group(4))
       end = safe_int(m.group(5))
-      bname = bibleapi.normalize_book_name(book_name)
-      if bname == None:
+      book_name = bibleapi.normalize_book_name(book_name)
+      #print "Groups:", m.groups()
+      if book_name == None:
         raise UnparsableReferenceError()
-      book = self.bible.get_book(bname)
+      book = self.bible.get_book(book_name)
       if not chap_start:
         return book
       # same as simple impl below here except changed self.book to book
@@ -103,7 +104,6 @@ class BibleResource(Resource):
       if not end:
         # leverage LineRange to extract a line
         return LineRange(book_name, chapter, start, start).children()[0]
-      print start,end, type(start), type(end)
       return LineRange(book_name, chapter, start, end)
     raise UnparsableReferenceError()
     #  if not start:
