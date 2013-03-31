@@ -34,6 +34,7 @@ class BibleResource(Resource):
   def default_with_simple():
     """ Load the pybible.Bible into SimpleBook data structures.
     """
+    res = BibleResource()
     bible = bibleapi.get_bible()
     new_books = []
     # this returns book names in order -- and assumes 
@@ -48,14 +49,16 @@ class BibleResource(Resource):
         for lnum in xrange(1, chapter.getNumVerses()+1):
           verse = chapter.getVerse(lnum)
           assert lnum == verse.getNumber()
-          new_lines.append(Line(cnum, lnum, verse.getText()))
-        new_chapters.append(Chapter(cnum, new_lines))
-      new_books.append(Book(new_chapters, book_name))
-    return BibleResource(Bible(new_books, "default"))
+          new_lines.append(Line(res, cnum, lnum, verse.getText()))
+        new_chapters.append(Chapter(res, cnum, new_lines))
+      new_books.append(Book(res, new_chapters, book_name))
+    res.bible = Bible(res, new_books, "default")
+    return res
 
-  def __init__(self, bible):
+  def __init__(self, bible=None):
     """ Stores only the top reference.
     """
+    # Needs book to be set, now or later!
     self.bible = bible
 
   def reference(self, str_ref):
@@ -85,31 +88,62 @@ class BibleResource(Resource):
       bname = bibleapi.normalize_book_name(book_name)
       if bname == None:
         raise UnparsableReferenceError()
+      book = self.bible.get_book(bname)
+      if not chap_start:
+        return book
+      # same as simple impl below here except changed self.book to book
+      fc = zero_indexed(chap_start)
       if not start:
         if not chap_end:
-          return xx book.getChapter(chap_start)
+          return book.children()[fc]
         else:
-          if chap_end > xx book.getNumChapters():
+          if chap_end > len(book.children()):
             raise InvalidReferenceError()
-          return ChapterRange(xx book, chap_start, chap_end)
-      # simple excepts an array of line strings
-      chapter = xx book.getChapter(chap_start).getVerseList()
+          return ChapterRange(
+              self, book.children()[fc:chap_end])
+      chapter = book.children()[fc]
       if not end:
         # leverage LineRange to extract a line
-        return LineRange(chapter, start, start).children()[0]
-      return LineRange(chapter, start, end)
+        return LineRange(self, chapter, start, start).children()[0]
+      print start,end, type(start), type(end)
+      return LineRange(self, chapter, start, end)
     raise UnparsableReferenceError()
+    #  if not start:
+    #    if not chap_end:
+    #      return xx book.getChapter(chap_start)
+    #    else:
+    #      if chap_end > xx book.getNumChapters():
+    #        raise InvalidReferenceError()
+    #      return ChapterRange(xx book, chap_start, chap_end)
+    #  # simple excepts an array of line strings
+    #  chapter = xx book.getChapter(chap_start).getVerseList()
+    #  if not end:
+    #    # leverage LineRange to extract a line
+    #    return LineRange(chapter, start, start).children()[0]
+    #  return LineRange(chapter, start, end)
+    #raise UnparsableReferenceError()
 
   def top_reference(self):
     return self.bible
 
 
-class Bible(Reference):
+from simple_books import ReferenceImpl
+
+class Bible(ReferenceImpl):
   """ 
   """
-  def __init__(self, books, version):
+  def __init__(self, resource, books, version):
+    ReferenceImpl.__init__(self, resource)
     self.version = version
     self.books = books
+
+  def get_book(self, book_name):
+    """ Takes normalized book name.
+    """
+    for book in self.books:
+      if book.title == book_name:
+        return book
+    return InvalidReferenceError()
 
   def children(self):
     return self.books
