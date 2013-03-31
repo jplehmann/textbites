@@ -6,6 +6,13 @@ As a module to be a singleton.
 
 _resources = {}
 
+
+import os.path
+from ..books import SimpleBookResource
+add("TEST1", SimpleBookResource.from_json(
+  os.path.join(os.path.dirname(__file__), "../data/pp-sample.json")))
+
+
 def list():
   """ Return list of Resources available in this library.
   """

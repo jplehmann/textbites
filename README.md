@@ -2,6 +2,12 @@
 pyBooks
 =======
 
+Lesson learned:
+- code reuse is good IF
+  - the code is written well (e.g. tests, comments, DRY)
+  - the code was doing a significant amount of work (size up the value gained)
+- in my case neither were true
+
 Things that made it a whipping:
 
 - sharing tests meant sharing test fixture data
