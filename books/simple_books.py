@@ -46,6 +46,8 @@ class SimpleBookResource(Resource):
       start = safe_int(m.group(3))
       end = safe_int(m.group(4))
       fc = zero_indexed(chap_start)
+      if not chap_start:
+        return self.top_reference()
       if not start:
         if not chap_end:
           return self.book.children()[fc]
@@ -59,7 +61,7 @@ class SimpleBookResource(Resource):
         # leverage LineRange to extract a line
         return LineRange(book, chapter, start, start).children()[0]
       return LineRange(book, chapter, start, end)
-    raise UnparsableReferenceError()
+    raise UnparsableReferenceError("Reference didn't match regex.")
 
   def top_reference(self):
     return self.book

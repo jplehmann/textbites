@@ -14,48 +14,55 @@ from books.bible import BibleResource
 from pybible import data
 
 
+TEST_BIBLE = "TEST"
+
+
 logging.basicConfig(level=logging.DEBUG, format='%(name)s: %(message)s')
 
-#class TestBibleBooksImpl(test_simple_books.TestSimpleBooksImpl, unittest.TestCase):
-class TestBibleBooksImpl(unittest.TestCase):
+class TestBibleBooksImpl(test_simple_books.TestSimpleBooksImpl, unittest.TestCase):
+#class TestBibleBooksImpl(unittest.TestCase):
   """ Create the implementation-specific system under test which 
   is the Resource.
   """
 
   @classmethod
   def setUpClass(cls):
-    BibleResource.init()
+    #BibleResource.init()
+    cls.res = BibleResource.with_simple(TEST_BIBLE)
 
   def setUp(self):
-    self.res = BibleResource.default_with_simple()
+    self.res = TestBibleBooksImpl.res
+  
+  def get_test_book(self):
+    return self.res.top_reference().children()[0]
 
-  def test_first_and_last_books(self):
-    bible = self.res.top_reference()
-    self.assertEquals(len(bible.children()), 66)
-    self.assertEquals(bible.children()[0].title, "Genesis")
-    self.assertEquals(bible.children()[-1].title, "Revelation")
+  #def test_first_and_last_books(self):
+  #  bible = self.res.top_reference()
+  #  self.assertEquals(len(bible.children()), 66)
+  #  self.assertEquals(bible.children()[0].title, "Genesis")
+  #  self.assertEquals(bible.children()[-1].title, "Revelation")
 
-  def test_parse_reference(self):
-    # Line
-    ref = self.res.reference("jn 3:16")
-    self.assertEquals(ref.pretty(), "John 3:16")
-    # LineRange
-    ref = self.res.reference("1 jn 4:2-5")
-    self.assertEquals(ref.pretty(), "1 John 4:2-5")
-    # Chapter
-    ref = self.res.reference("jn 3")
-    self.assertEquals(ref.pretty(), "John 3")
-    # ChapterRange
-    ref = self.res.reference("jn 3-4")
-    self.assertEquals(ref.pretty(), "John 3-4")
+  #def test_parse_reference(self):
+  #  # Line
+  #  ref = self.res.reference("jn 3:16")
+  #  self.assertEquals(ref.pretty(), "John 3:16")
+  #  # LineRange
+  #  ref = self.res.reference("1 jn 4:2-5")
+  #  self.assertEquals(ref.pretty(), "1 John 4:2-5")
+  #  # Chapter
+  #  ref = self.res.reference("jn 3")
+  #  self.assertEquals(ref.pretty(), "John 3")
+  #  # ChapterRange
+  #  ref = self.res.reference("jn 3-4")
+  #  self.assertEquals(ref.pretty(), "John 3-4")
 
-  def test_search(self):
-    ref = self.res.reference("jn 3")
-    hits = ref.search("love")
-    hit_refs = [h.pretty() for h in hits]
-    self.assertEquals(len(hit_refs), 3)
-    self.assertTrue("John 3:16" in hit_refs)
-    self.method()
+  #def test_search(self):
+  #  ref = self.res.reference("jn 3")
+  #  hits = ref.search("love")
+  #  hit_refs = [h.pretty() for h in hits]
+  #  self.assertEquals(len(hit_refs), 3)
+  #  self.assertTrue("John 3:16" in hit_refs)
+  #  self.method()
 
 
   ## TODO: move these into Bible project

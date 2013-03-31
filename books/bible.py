@@ -15,7 +15,7 @@ import re
 
 from api import Reference
 from api import Resource
-#from api import UnparsableReferenceError
+from api import UnparsableReferenceError
 from api import InvalidReferenceError
 from .utils import *
 
@@ -27,19 +27,17 @@ from pybible import api as bibleapi
 class BibleResource(Resource):
 
   @staticmethod
-  def init():
-    bibleapi.init()
-
-  @staticmethod
-  def default_with_simple():
+  def with_simple(trans=None):
+    bibleapi.init(trans)
     """ Load the pybible.Bible into SimpleBook data structures.
     """
-    bible = bibleapi.get_bible()
+    bible = bibleapi.get_bible(trans)
     new_books = []
     # this returns book names in order -- and assumes 
     # this implementation has them.
-    for book_name in bibleapi.all_book_names():
-      book = bible.getBook(book_name)
+    for book in bible.getBooks():
+      book_name = book.getName()
+      #book_name = book.getName() if book_in_refs else "Chapter"
       new_chapters = []
       for cnum in xrange(1, book.getNumChapters()+1):
         chapter = book.getChapter(cnum)
@@ -66,28 +64,24 @@ class BibleResource(Resource):
     """
     # TODO: reuse this across 3 implementations by passing in a 
     # classname? or factory to produce the objects
-    #(text, ref) = bibleapi.get_one_ref(str_ref)
-    ## TODO: currently doesn't handle ranges because
-    ## it splits those up into multiple references
-    #print "types:", str_ref, type(ref)
-    #str_ref = str(ref)
-    #print ref.book
-    #print ref.chapter
-    #print ref.verseNums
-    #print ref.range
-    #return BibleRef(str_ref)
-    m = re.match("((?:(?:\d) )?\w+?) (\d+)(?:-(\d+))?(?::(\d+)(?:-(\d+))?)?", str_ref)
+    m = re.match("(?:((?:(?:[\d\w]+) )*\w+?) )?(\d+)(?:-(\d+))?(?::(\d+)(?:-(\d+))?)?", str_ref)
     if m:
       book_name = m.group(1)
       chap_start = safe_int(m.group(2))
       chap_end = safe_int(m.group(3))
       start = safe_int(m.group(4))
       end = safe_int(m.group(5))
-      book_name = bibleapi.normalize_book_name(book_name)
-      #print "Groups:", m.groups()
-      if book_name == None:
-        raise UnparsableReferenceError()
-      book = self.bible.get_book(book_name)
+      norm_book_name = bibleapi.normalize_book_name(book_name)
+      # handle implied book if they just said "chapter"
+      if norm_book_name == None or book_name.lower() == "chapter":
+        # if only 1 book, just return that
+        if len(self.bible.books) > 1:
+          raise UnparsableReferenceError("Book not found: " + book_name)
+        book = self.bible.children()[0]
+        book_name = book.title
+      else:
+        book = self.bible.get_book(norm_book_name)
+        book_name = norm_book_name
       if not chap_start:
         return book
       # same as simple impl below here except changed self.book to book
@@ -105,27 +99,13 @@ class BibleResource(Resource):
         # leverage LineRange to extract a line
         return LineRange(book_name, chapter, start, start).children()[0]
       return LineRange(book_name, chapter, start, end)
-    raise UnparsableReferenceError()
-    #  if not start:
-    #    if not chap_end:
-    #      return xx book.getChapter(chap_start)
-    #    else:
-    #      if chap_end > xx book.getNumChapters():
-    #        raise InvalidReferenceError()
-    #      return ChapterRange(xx book, chap_start, chap_end)
-    #  # simple excepts an array of line strings
-    #  chapter = xx book.getChapter(chap_start).getVerseList()
-    #  if not end:
-    #    # leverage LineRange to extract a line
-    #    return LineRange(chapter, start, start).children()[0]
-    #  return LineRange(chapter, start, end)
-    #raise UnparsableReferenceError()
+    raise UnparsableReferenceError("Reference didn't match regex: " + str_ref)
 
   def top_reference(self):
     return self.bible
 
 
-class Bible():
+class Bible(Reference):
   """ 
   """
   def __init__(self, books, version):

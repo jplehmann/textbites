@@ -67,10 +67,16 @@ class Reference(object):
 class UnparsableReferenceError(Exception):
   """ Reference format is not supported.
   """
-  pass
+  def __init__(self, val=""):
+    self.val = val
+  def __str__(self):
+    return repr(self.val)
+
 
 class InvalidReferenceError(Exception):
   """ Reference is out of bounds. 
   """
-  pass
-
+  def __init__(self, val=""):
+    self.val = val
+  def __str__(self):
+    return repr(self.val)

@@ -54,6 +54,8 @@ class BookResource(Resource):
       chap_start = m.group(1)
       chap_end = m.group(2)
       start = m.group(3)
+      if not chap_start:
+        return self.top_reference()
       if not start:
         if not chap_end:
           return Chapter(self, int(chap_start))

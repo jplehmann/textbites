@@ -16,3 +16,6 @@ class TestSimpleBooksImpl(TestInterface, unittest.TestCase):
   def setUp(self):
     self.res = SimpleBookResource.from_json(TestInterface.data)
 
+  def get_test_book(self):
+    return self.res.top_reference()
+
