@@ -62,9 +62,10 @@ class BibleResource(Resource):
     Note: this only handles a single reference, and since chapter
     ranges are handled as separate refs, only the first is returned.
     """
+    str_ref = str_ref.strip()
     # TODO: reuse this across 3 implementations by passing in a 
     # classname? or factory to produce the objects
-    m = re.match("(?:((?:(?:[\d\w]+) )*\w+?) )?(\d+)(?:-(\d+))?(?::(\d+)(?:-(\d+))?)?", str_ref)
+    m = re.match("(?:((?:(?:[\d\w]+) )*\w+?) )?(\d+)(?:-(\d+))?(?::(\d+)(?:-(\d+))?)?$", str_ref)
     if m:
       book_name = m.group(1)
       chap_start = safe_int(m.group(2))
@@ -72,6 +73,7 @@ class BibleResource(Resource):
       start = safe_int(m.group(4))
       end = safe_int(m.group(5))
       norm_book_name = bibleapi.normalize_book_name(book_name)
+      #print book_name, norm_book_name, str_ref, m.groups()
       # handle implied book if they just said "chapter"
       if norm_book_name == None or book_name.lower() == "chapter":
         # if only 1 book, just return that
@@ -99,6 +101,10 @@ class BibleResource(Resource):
         # leverage LineRange to extract a line
         return LineRange(book_name, chapter, start, start).children()[0]
       return LineRange(book_name, chapter, start, end)
+    # try to match a bookname by itself
+    norm_book_name = bibleapi.normalize_book_name(str_ref)
+    if norm_book_name != None:
+      return self.bible.get_book(norm_book_name)
     raise UnparsableReferenceError("Reference didn't match regex: " + str_ref)
 
   def top_reference(self):

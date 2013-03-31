@@ -21,7 +21,7 @@ class TestInterface():
   @classmethod
   def setUpClass(cls):
     TestInterface.data = json.load(open(DATA_FILE))
-    print TestInterface.data
+    #print TestInterface.data
 
   # Resource top_reference()
   def test_resource_top_reference(self):

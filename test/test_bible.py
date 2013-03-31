@@ -16,18 +16,16 @@ from pybible import data
 
 TEST_BIBLE = "TEST"
 
-
 logging.basicConfig(level=logging.DEBUG, format='%(name)s: %(message)s')
 
+
 class TestBibleBooksImpl(test_simple_books.TestSimpleBooksImpl, unittest.TestCase):
-#class TestBibleBooksImpl(unittest.TestCase):
   """ Create the implementation-specific system under test which 
   is the Resource.
   """
 
   @classmethod
   def setUpClass(cls):
-    #BibleResource.init()
     cls.res = BibleResource.with_simple(TEST_BIBLE)
 
   def setUp(self):
@@ -36,43 +34,62 @@ class TestBibleBooksImpl(test_simple_books.TestSimpleBooksImpl, unittest.TestCas
   def get_test_book(self):
     return self.res.top_reference().children()[0]
 
-  #def test_first_and_last_books(self):
-  #  bible = self.res.top_reference()
-  #  self.assertEquals(len(bible.children()), 66)
-  #  self.assertEquals(bible.children()[0].title, "Genesis")
-  #  self.assertEquals(bible.children()[-1].title, "Revelation")
 
-  #def test_parse_reference(self):
-  #  # Line
-  #  ref = self.res.reference("jn 3:16")
-  #  self.assertEquals(ref.pretty(), "John 3:16")
-  #  # LineRange
-  #  ref = self.res.reference("1 jn 4:2-5")
-  #  self.assertEquals(ref.pretty(), "1 John 4:2-5")
-  #  # Chapter
-  #  ref = self.res.reference("jn 3")
-  #  self.assertEquals(ref.pretty(), "John 3")
-  #  # ChapterRange
-  #  ref = self.res.reference("jn 3-4")
-  #  self.assertEquals(ref.pretty(), "John 3-4")
+class TestBibleBooksImplWithBible(unittest.TestCase):
+  """ Create the implementation-specific system under test which 
+  is the Resource.
+  These are Bible-specific tests (on the Bible text).
+  """
 
-  #def test_search(self):
-  #  ref = self.res.reference("jn 3")
-  #  hits = ref.search("love")
-  #  hit_refs = [h.pretty() for h in hits]
-  #  self.assertEquals(len(hit_refs), 3)
-  #  self.assertTrue("John 3:16" in hit_refs)
-  #  self.method()
+  @classmethod
+  def setUpClass(cls):
+    cls.res = BibleResource.with_simple()
 
+  def test_first_and_last_books(self):
+    bible = self.res.top_reference()
+    self.assertEquals(len(bible.children()), 66)
+    self.assertEquals(bible.children()[0].title, "Genesis")
+    self.assertEquals(bible.children()[-1].title, "Revelation")
 
-  ## TODO: move these into Bible project
-  #def test_normalize_book_name(self):
-  #  self.assertEquals(data.normalize_book_name("John"), "John")
-  #  self.assertEquals(data.normalize_book_name("jn"), "John")
-  #  self.assertEquals(data.normalize_book_name("jN"), "John")
-  #  self.assertEquals(data.normalize_book_name("1jn"), "1 John")
-  #  self.assertEquals(data.normalize_book_name("1jn"), "1 John")
-  #  self.assertEquals(data.normalize_book_name("mk"), "Mark")
+  def test_parse_reference(self):
+    # Line
+    ref = self.res.reference("jn 3:16")
+    self.assertEquals(ref.pretty(), "John 3:16")
+    # LineRange
+    ref = self.res.reference("1 jn 4:2-5")
+    self.assertEquals(ref.pretty(), "1 John 4:2-5")
+    # Chapter
+    ref = self.res.reference("jn 3")
+    self.assertEquals(ref.pretty(), "John 3")
+    # ChapterRange
+    ref = self.res.reference("jn 3-4")
+    self.assertEquals(ref.pretty(), "John 3-4")
+    # Book
+    ref = self.res.reference("1 jn")
+    self.assertEquals(ref.pretty(), "1 John")
+
+  def test_search_chapter(self):
+    ref = self.res.reference("jn 3")
+    hits = ref.search("love")
+    hit_refs = [h.pretty() for h in hits]
+    self.assertEquals(len(hit_refs), 3)
+    self.assertTrue("John 3:16" in hit_refs)
+
+  def test_search_book(self):
+    ref = self.res.reference("jn")
+    hits = ref.search("believe")
+    hit_refs = [h.pretty() for h in hits]
+    self.assertEquals(len(hit_refs), 80)
+    self.assertTrue("John 5:24" in hit_refs)
+
+  # TODO: move these into Bible project
+  def test_normalize_book_name(self):
+    self.assertEquals(data.normalize_book_name("John"), "John")
+    self.assertEquals(data.normalize_book_name("jn"), "John")
+    self.assertEquals(data.normalize_book_name("jN"), "John")
+    self.assertEquals(data.normalize_book_name("1jn"), "1 John")
+    self.assertEquals(data.normalize_book_name("1jn"), "1 John")
+    self.assertEquals(data.normalize_book_name("mk"), "Mark")
 
 
   """
@@ -82,33 +99,6 @@ TODO: Move to bible project
 #from pybible.bibref import newBibleText
 #from pybible.loader import loader
 #from pybible import data
-TRANS = data.DEFAULT_VERSION
-  @unittest.skip
-  def test_test(self):
-    ref = self.res.reference("jn 3:16")
-    ref = self.res.reference("1 jn 3:16")
-    ref = self.res.reference("1 jn 3:16-17")
-    ref = self.res.reference("1 jn 3-4")
-    ref = self.res.reference("1 asdf 3-4")
-    #self.assertEquals(ref.pretty(), "John 3:16")
-
-  @unittest.skip
-  def test_one(self):
-    ref = self.res.reference("jn 3:16")
-    self.assertEquals(ref.pretty(), "John 3:16")
-
-  @unittest.skip
-  def test_whole_book(self):
-    ref = self.res.reference("jn")
-    # NOTE: currently only returns first in a range
-    # doesn't handle whole chapters
-    self.assertEquals(ref.pretty(), "John")
-
-  @unittest.skip
-  def test_chapter_range(self):
-    ref = self.res.reference("jn 3-4")
-    # NOTE: currently only returns first in a range
-    self.assertEquals(ref.pretty(), "John 3")
 
   @unittest.skip
   def test_bible_reference_parsing(self):
