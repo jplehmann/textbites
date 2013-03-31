@@ -26,10 +26,15 @@ def add(name, resource):
   _resources[name] = resource
 
 
-from pybooks.simple_books import SimpleBookResource
-import json
-TEST1 = json.load(
-    open(os.path.join(os.path.dirname(__file__), "../data/pp-sample.json")))
-add("TEST1", SimpleBookResource.from_json(TEST1))
+# TODO Move this somewhere!!
+def load_resources():
+  from pybooks.simple_books import SimpleBookResource
+  from pybooks.bible import BibleResource
+  import json
+  TEST1 = json.load(
+      open(os.path.join(os.path.dirname(__file__), "../data/pp-sample.json")))
+  add("TEST1", SimpleBookResource.from_json(TEST1))
+  add("TEST2", BibleResource.with_simple("TEST"))
+  add("NASB", BibleResource.with_simple("NASB"))
 
 

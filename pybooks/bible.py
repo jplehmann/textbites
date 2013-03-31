@@ -49,7 +49,7 @@ class BibleResource(Resource):
           new_lines.append(Line(book_name, cnum, lnum, verse.getText()))
         new_chapters.append(Chapter(book_name, cnum, new_lines))
       new_books.append(Book(new_chapters, book_name))
-    return BibleResource(Bible(new_books, "default"))
+    return BibleResource(Bible(new_books, bible.getVersion()))
 
   def __init__(self, bible):
     """ Stores only the top reference.
@@ -102,6 +102,10 @@ class BibleResource(Resource):
         return LineRange(book_name, chapter, start, start).children()[0]
       return LineRange(book_name, chapter, start, end)
     # try to match a bookname by itself
+    try:
+      return self.bible.get_book(str_ref)
+    except:
+      pass
     norm_book_name = bibleapi.normalize_book_name(str_ref)
     if norm_book_name != None:
       return self.bible.get_book(norm_book_name)
@@ -124,7 +128,7 @@ class Bible(Reference):
     for book in self.books:
       if book.title == book_name:
         return book
-    return InvalidReferenceError()
+    raise InvalidReferenceError()
 
   def children(self):
     return self.books
