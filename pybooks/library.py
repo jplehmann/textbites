@@ -31,9 +31,12 @@ def load_resources():
   from pybooks.simple_books import SimpleBookResource
   from pybooks.bible import BibleResource
   import json
-  TEST1 = json.load(
-      open(os.path.join(os.path.dirname(__file__), "../data/pp-sample.json")))
-  add("TEST1", SimpleBookResource.from_json(TEST1))
+  try:
+    TEST1 = json.load(
+        open(os.path.join(os.path.dirname(__file__), "../data/pp-sample.json")))
+    add("TEST1", SimpleBookResource.from_json(TEST1))
+  except Exception as e:
+    print "Couldn't load TEST1: " + str(e)
   add("TEST2", BibleResource.with_simple("TEST"))
   add("NASB", BibleResource.with_simple("NASB"))
 
