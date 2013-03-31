@@ -6,7 +6,6 @@ setup(
     author='John Lehmann',
     author_email='john.lehmann@gmail.com',
     packages=['pybooks'],
-    #package_data={'pybible': ['data/*']},
     scripts=[],
     url='',
     license='LICENSE.txt',
