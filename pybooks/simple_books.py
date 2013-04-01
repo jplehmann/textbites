@@ -153,6 +153,8 @@ class Chapter(Reference):
   def search(self, pattern, first_line=None, last_line=None):
     fl = zero_indexed(first_line)
     return [l for l in self.lines[fl:last_line] if l.search(pattern)]
+    # unfold list
+    #return [inner for outer in lists for inner in outer]
 
 
 class LineRange(Reference):
@@ -201,7 +203,9 @@ class Line(Reference):
     return self.line
 
   def search(self, pattern):
+    """ Return a list for consistency.
+    """
     if re.search(pattern, self.line):
-      return self
-    return None
+      return [self]
+    return []
 
