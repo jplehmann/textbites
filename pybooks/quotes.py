@@ -16,7 +16,7 @@ log = logging.getLogger(__name__)
 
 class QuotesResource(Resource, Reference):
 
-  REF_DELIM = ':'
+  REF_DELIM = '::'
 
   @staticmethod
   def from_tsv(data):
@@ -47,7 +47,7 @@ class QuotesResource(Resource, Reference):
       for qnum, quote_pair in enumerate(data, 1):
         date, quote = quote_pair
         #print qnum, date, quote
-        qid = str(person+ ":" + str(qnum))
+        qid = str(person+ QuotesResource.REF_DELIM + str(qnum))
         quotes.append(Quote(person, quote, qid));
       people.append(Person(person, quotes))
     return QuotesResource(people)
@@ -80,7 +80,7 @@ class QuotesResource(Resource, Reference):
         a full name.
     """
     if str_ref.find(QuotesResource.REF_DELIM) != -1:
-      name, num = str_ref.split(':') 
+      name, num = str_ref.split(QuotesResource.REF_DELIM) 
     else: 
       name = str_ref
       num = None
