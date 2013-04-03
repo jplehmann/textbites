@@ -71,7 +71,8 @@ class QuotesResource(Resource, Reference):
   def __init__(self, people):
     """ Stores only the top reference.
     """
-    self.people = people
+    self.people = sorted(people, key=lambda x:x.name)
+    print self.people
 
   def reference(self, str_ref):
     """ Parse this string reference as a person name, and return
