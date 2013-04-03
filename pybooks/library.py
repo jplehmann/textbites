@@ -30,11 +30,17 @@ def add(name, resource):
 def load_resources():
   from pybooks.simple_books import SimpleBookResource
   from pybooks.bible import BibleResource
+  from pybooks.quotes import QuotesResource
   import json
   try:
     TEST1 = json.load(
         open(os.path.join(os.path.dirname(__file__), "../data/pp-sample.json")))
     add("TEST1", SimpleBookResource.from_json(TEST1))
+  except Exception as e:
+    print "Couldn't load TEST1: " + str(e)
+  try:
+    QUOTES = open(os.path.join(os.path.dirname(__file__), "../data/quotes.tsv"))
+    add("QUOTES", QuotesResource.from_tsv(QUOTES))
   except Exception as e:
     print "Couldn't load TEST1: " + str(e)
   add("TEST2", BibleResource.with_simple("TEST"))

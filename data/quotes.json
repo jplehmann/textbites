@@ -1,0 +1,25 @@
+{
+"people": 
+[
+  { "person":"John Doe",
+    "quotes":
+    [ 
+      {"quote":"quote 1"},
+      {"quote":"quote 2"},
+      {"quote":"quote 3"}
+    ]
+  },
+  { "person":"Jane Doe",
+    "quotes":
+    [ 
+      {"quote":"quote 4"},
+      {"quote":"quote 5"},
+      {"quote":"quote 6"},
+      {"quote":"quote 7"}
+    ] 
+  }
+]
+}
+
+
+
