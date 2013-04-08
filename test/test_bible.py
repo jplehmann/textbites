@@ -62,6 +62,9 @@ class TestBibleBooksImplWithBible(unittest.TestCase):
     # Chapter
     ref = self.res.reference("jn 3")
     self.assertEquals(ref.pretty(), "John 3")
+    # Chapter
+    ref = self.res.reference("john 3")
+    self.assertEquals(ref.pretty(), "John 3")
     # ChapterRange
     ref = self.res.reference("jn 3-4")
     self.assertEquals(ref.pretty(), "John 3-4")
