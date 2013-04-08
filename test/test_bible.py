@@ -86,6 +86,26 @@ class TestBibleBooksImplWithBible(unittest.TestCase):
     self.assertEquals(len(hit_refs), 80)
     self.assertTrue("John 5:24" in hit_refs)
 
+  # TODO: move these into simple but I wanted
+  # easy test cases
+  # Move into base, but only if I make the other impls
+  # support it
+  def test_previous_edge(self):
+    ref = self.res.reference("jn 3:1")
+    self.assertEquals(ref.previous(), None)
+    ref = self.res.reference("jn 3:2")
+    self.assertEquals(ref.previous().pretty(), "John 3:1")
+
+  def test_next(self):
+    ref = self.res.reference("jn 3:16")
+    self.assertEquals(ref.next().pretty(), "John 3:17")
+
+  def test_next_edge(self):
+    ref = self.res.reference("jn 3:36")
+    self.assertEquals(ref.next(), None)
+    ref = self.res.reference("jn 3:35")
+    self.assertEquals(ref.next().pretty(), "John 3:36")
+
   # TODO: move these into Bible project
   def test_normalize_book_name(self):
     self.assertEquals(data.normalize_book_name("John"), "John")
@@ -95,24 +115,6 @@ class TestBibleBooksImplWithBible(unittest.TestCase):
     self.assertEquals(data.normalize_book_name("1jn"), "1 John")
     self.assertEquals(data.normalize_book_name("mk"), "Mark")
 
-  def test_context_size_3(self):
-    ref = self.res.reference("jn 3:16")
-    context = ref.context(3)
-    self.assertIsInstance(context, LineRange)
-    self.assertEquals(len(context), 7)
-    self.assertEquals(context[3], ref)
-
-  def test_context_size_1(self):
-    ref = self.res.reference("jn 3:16")
-    context = ref.context(1)
-    self.assertEquals(len(context), 3)
-    self.assertEquals(context[1], ref)
-
-  def test_context_size_edge(self):
-    ref = self.res.reference("jn 3:1")
-    context = ref.context(3)
-    self.assertEquals(len(context), 4)
-    self.assertEquals(context[0], ref)
 
 
   """

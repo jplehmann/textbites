@@ -74,6 +74,26 @@ class Reference(object):
     """
     return self._parent
 
+  def previous(self):
+    """ Return reference for previous or None.
+        For this, subclasses must have called Reference's ctor.
+    """
+    if self.parent():
+      idx = self.parent().children().index(self)
+      if idx != -1 and idx >= 1:
+        return self.parent()[idx-1]
+    return None
+
+  def next(self):
+    """ Return reference for next or None.
+        For this, subclasses must have called Reference's ctor.
+    """
+    if self.parent():
+      idx = self.parent().children().index(self)
+      if idx != -1 and idx+1 < len(self.parent()):
+        return self.parent()[idx+1]
+    return None
+
   def __len__(self):
     return len(self.children())
 
