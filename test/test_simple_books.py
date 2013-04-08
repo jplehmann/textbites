@@ -18,4 +18,6 @@ class TestSimpleBooksImpl(TestInterface, unittest.TestCase):
 
   def get_test_book(self):
     return self.res.top_reference()
+  
+
 

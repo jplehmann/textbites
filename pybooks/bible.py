@@ -121,6 +121,7 @@ class Bible(Reference):
   def __init__(self, books, version):
     self.version = version
     self.books = books
+    Reference.__init__(self)
 
   def get_book(self, book_name):
     """ Takes normalized book name.

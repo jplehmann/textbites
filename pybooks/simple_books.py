@@ -67,26 +67,21 @@ class SimpleBookResource(Resource):
     return self.book
 
 
-#class ReferenceImpl(Reference):
-#  """ Represents some section of text.
-#  """
-#  def __init__(self, resource):
-#    self._resource = resource
-#
-#  def ref_prefix(self):
-#    try:
-#      return self._resource.top_reference().title
-#    except Exception:
-#      return "Chapter"
+class ReferenceImpl(Reference):
+  """ Represents some section of text.
+  """
+  def __init__(self):
+    Reference.__init__(self)
 
 
-class Book(Reference):
+class Book(ReferenceImpl):
   """ A single book.
   """
   def __init__(self, chapters, title=None, author=None):
     self.chapters = chapters
     self.author = author
     self.title = title
+    ReferenceImpl.__init__(self)
 
   def children(self):
     return self.chapters
@@ -107,7 +102,7 @@ class Book(Reference):
     return hits
 
 
-class ChapterRange(Reference):
+class ChapterRange(ReferenceImpl):
   """ A range of chapters.
   """
   def __init__(self, book, chapters):
@@ -115,6 +110,7 @@ class ChapterRange(Reference):
     """
     self.book = book 
     self.chapters = chapters
+    # don't overwrite parent! ReferenceImpl.__init__(self)
 
   def children(self):
     return self.chapters
@@ -133,13 +129,14 @@ class ChapterRange(Reference):
     return hits
 
 
-class Chapter(Reference):
+class Chapter(ReferenceImpl):
   """ A single chapter.
   """
   def __init__(self, book, num, lines):
     self.book = book
     self.num = num
     self.lines = lines 
+    ReferenceImpl.__init__(self)
 
   def children(self):
     return self.lines
@@ -157,7 +154,7 @@ class Chapter(Reference):
     #return [inner for outer in lists for inner in outer]
 
 
-class LineRange(Reference):
+class LineRange(ReferenceImpl):
   """ A range of lines.
   """
   def __init__(self, book, chapter, start, end):
@@ -169,6 +166,17 @@ class LineRange(Reference):
     self.chapter = chapter
     self.start = start
     self.end = end
+    # don't overwrite parent! ReferenceImpl.__init__(self)
+
+  @staticmethod
+  def from_lines(lines):
+    """ From a list of Line objects.
+    """
+    if not lines:
+      raise InvalidReferenceError("can't create LineRange from 0 lines");
+    chapter = lines[0].parent()
+    book = chapter.parent()
+    return LineRange(book, chapter, lines[0].lnum, lines[-1].lnum)
 
   def children(self):
     return self.chapter.children()[zero_indexed(self.start):self.end]
@@ -184,7 +192,7 @@ class LineRange(Reference):
     return self.chapter.search(pattern, self.start, self.end)
 
 
-class Line(Reference):
+class Line(ReferenceImpl):
   """ A single line.
   """
   def __init__(self, book, cnum, lnum, line):
@@ -192,6 +200,7 @@ class Line(Reference):
     self.line = line
     self.cnum = cnum
     self.lnum = lnum
+    ReferenceImpl.__init__(self)
 
   def children(self):
     return None
@@ -208,4 +217,14 @@ class Line(Reference):
     if re.search(pattern, self.line):
       return [self]
     return []
+
+  def context(self, size):
+    """ Return a line range of references including self, with its
+        'size' number of siblings before and after.
+    """
+    siblings = self.parent().children()
+    idx = siblings.index(self)
+    # ending index beyond size is not a problem for slice
+    return LineRange.from_lines(siblings[max(idx-size, 0):idx+size+1])
+
 

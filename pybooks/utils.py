@@ -14,3 +14,7 @@ def val_or_default(val, none_val=0):
 
 def safe_int(val):
   return int(val) if val != None else val
+
+def min0(val):
+  return 0 if val < 0 else val
+

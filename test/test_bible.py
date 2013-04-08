@@ -9,6 +9,7 @@ import test_simple_books
 
 #from test_books_base import TestInterface
 from pybooks.bible import BibleResource
+from pybooks.simple_books import LineRange
 
 # TODO remove this
 from pybible import data
@@ -90,6 +91,25 @@ class TestBibleBooksImplWithBible(unittest.TestCase):
     self.assertEquals(data.normalize_book_name("1jn"), "1 John")
     self.assertEquals(data.normalize_book_name("1jn"), "1 John")
     self.assertEquals(data.normalize_book_name("mk"), "Mark")
+
+  def test_context_size_3(self):
+    ref = self.res.reference("jn 3:16")
+    context = ref.context(3)
+    self.assertIsInstance(context, LineRange)
+    self.assertEquals(len(context), 7)
+    self.assertEquals(context[3], ref)
+
+  def test_context_size_1(self):
+    ref = self.res.reference("jn 3:16")
+    context = ref.context(1)
+    self.assertEquals(len(context), 3)
+    self.assertEquals(context[1], ref)
+
+  def test_context_size_edge(self):
+    ref = self.res.reference("jn 3:1")
+    context = ref.context(3)
+    self.assertEquals(len(context), 4)
+    self.assertEquals(context[0], ref)
 
 
   """

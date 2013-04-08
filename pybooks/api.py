@@ -38,6 +38,11 @@ class Reference(object):
         detail.
       - next()/prev() - for walking the chain
   """
+  def __init__(self):
+    # set parent for children
+    if self.children():
+      for child in self.children():
+        child._parent = self
 
   def pretty(self):
     """ Return a canonical string of this reference.
@@ -62,6 +67,21 @@ class Reference(object):
     """ Return an iterable of References under this item.
     """
     raise NotImplementedError()
+
+  def parent(self):
+    """ Return parent reference or None.
+        For this, subclasses must have called Reference's ctor.
+    """
+    return self._parent
+
+  def __len__(self):
+    return len(self.children())
+
+  def __getitem__(self, key):
+    return self.children()[key]
+
+  def __str__(self):
+    return "%s:%s" % (type(self), self.pretty())
 
 
 class UnparsableReferenceError(Exception):
