@@ -128,6 +128,9 @@ class ChapterRange(ReferenceImpl):
       hits.extend(chap.search(pattern))
     return hits
 
+  def parent(self):
+    return self.book
+
 
 class Chapter(ReferenceImpl):
   """ A single chapter.
@@ -190,6 +193,9 @@ class LineRange(ReferenceImpl):
 
   def search(self, pattern):
     return self.chapter.search(pattern, self.start, self.end)
+
+  def parent(self):
+    return self.chapter
 
 
 class Line(ReferenceImpl):

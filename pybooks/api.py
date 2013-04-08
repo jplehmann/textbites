@@ -72,16 +72,22 @@ class Reference(object):
     """ Return parent reference or None.
         For this, subclasses must have called Reference's ctor.
     """
-    return self._parent
+    try:
+      return self._parent
+    except:
+      return None
 
   def previous(self):
     """ Return reference for previous or None.
         For this, subclasses must have called Reference's ctor.
     """
     if self.parent():
-      idx = self.parent().children().index(self)
-      if idx != -1 and idx >= 1:
-        return self.parent()[idx-1]
+      try:
+        idx = self.parent().children().index(self)
+        if idx != -1 and idx >= 1:
+          return self.parent()[idx-1]
+      except:
+        pass
     return None
 
   def next(self):
@@ -89,19 +95,28 @@ class Reference(object):
         For this, subclasses must have called Reference's ctor.
     """
     if self.parent():
-      idx = self.parent().children().index(self)
-      if idx != -1 and idx+1 < len(self.parent()):
-        return self.parent()[idx+1]
+      try:
+        idx = self.parent().children().index(self)
+        if idx != -1 and idx+1 < len(self.parent()):
+          return self.parent()[idx+1]
+      except:
+        pass
     return None
 
   def __len__(self):
-    return len(self.children())
+    if self.children():
+      return len(self.children())
+    return 0
 
   def __getitem__(self, key):
     return self.children()[key]
 
   def __str__(self):
     return "%s:%s" % (type(self), self.pretty())
+
+  def __nonzero__(self):
+    """ Don't want evaluation based on len(). """
+    return 1
 
 
 class UnparsableReferenceError(Exception):

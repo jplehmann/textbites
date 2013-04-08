@@ -106,6 +106,31 @@ class TestBibleBooksImplWithBible(unittest.TestCase):
     ref = self.res.reference("jn 3:35")
     self.assertEquals(ref.next().pretty(), "John 3:36")
 
+  def test_parent_line(self):
+    ref = self.res.reference("jn 3:1")
+    self.assertEquals(ref.parent().pretty(), "John 3")
+
+  def test_parent_line_group(self):
+    ref = self.res.reference("jn 3:1-3")
+    self.assertEquals(ref.parent().pretty(), "John 3")
+  
+  def test_parent_chapter(self):
+    ref = self.res.reference("jn 3")
+    self.assertEquals(ref.parent().pretty(), "John")
+
+  def test_chapter_length(self):
+    ref = self.res.reference("jn 3")
+    self.assertEquals(len(ref), 36)
+
+  def test_book_length(self):
+    ref = self.res.reference("jn")
+    self.assertEquals(len(ref), 21)
+
+  #def test_line_length(self):
+  #  ref = self.res.reference("jn 3:1")
+  #  self.assertEquals(len(ref), None)
+
+
   # TODO: move these into Bible project
   def test_normalize_book_name(self):
     self.assertEquals(data.normalize_book_name("John"), "John")
