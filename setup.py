@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name='pybooks',
-    version='0.1.2',
+    version='0.1.3',
     author='John Lehmann',
     author_email='john.lehmann@gmail.com',
     packages=['pybooks'],

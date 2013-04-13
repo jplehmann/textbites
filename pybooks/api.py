@@ -49,6 +49,12 @@ class Reference(object):
     """
     raise NotImplementedError()
 
+  def short(self):
+    """ Shorter version of pretty with relative information.
+        e.g. a line would only include its number.
+    """
+    return self.pretty()
+
   def text(self):
     """ Return string of the text corresponding to this reference.
         Should probably be unsupported for entire book.

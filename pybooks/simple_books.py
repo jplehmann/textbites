@@ -147,6 +147,9 @@ class Chapter(ReferenceImpl):
   def pretty(self):
     return "%s %d" % (self.book, self.num)
 
+  def short(self):
+    return self.num
+
   def text(self):
     return '\n'.join([l.text() for l in self.lines]).strip()
 
@@ -213,6 +216,9 @@ class Line(ReferenceImpl):
 
   def pretty(self):
     return "%s %d:%d" % (self.book, self.cnum, self.lnum)
+
+  def short(self):
+    return self.lnum
 
   def text(self):
     return self.line
