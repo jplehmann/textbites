@@ -30,6 +30,21 @@ TODO:
 
 Questions
 ---------
+- relationship of resource and reference
+  - in tagz, i want to have a set of top references
+  - i want ot be able to ask them questiona bout their resource type
+    too....
+  - problem is that if i make all of the simple refs also simple books,
+    then i can't reuse them in bible
+- whatever factory loads it is what determines what it is, because
+  it creates all the objects
+  - i could store the resource on the top reference
+  - i guess i'dl ike to dynamically inherit
+  - but the best we can do is to compose it on the top level
+  - resource() on any ref could call to the top parent and then 
+    retrieve the resource
+
+
 
 Todo
 ----

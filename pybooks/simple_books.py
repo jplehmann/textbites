@@ -16,7 +16,7 @@ class SimpleBookResource(Resource):
 
   @staticmethod
   def from_json(data):
-    """ Create a resource from json data.
+    """ Create a XXX book & resource from json data.
         Assumes title, author, chapters/text
     """
     chapters = []
@@ -27,7 +27,10 @@ class SimpleBookResource(Resource):
       for lnum, line in enumerate(chapter.get("text").split('\n'), 1):
         lines.append(Line(title, cnum, lnum, line.strip()))
       chapters.append(Chapter(title, cnum, lines))
-    return SimpleBookResource(Book(chapters, title, author))
+    book = Book(chapters, title, author)
+    book._resource = SimpleBookResource(book)
+    #return book
+    return book.resource()
 
   def __init__(self, book):
     """ Stores only the top reference.
@@ -39,7 +42,7 @@ class SimpleBookResource(Resource):
     """
     m = re.match("(?:(?:\w+ )*\w+ ?)?(\d+)(?:-(\d+))?(?::(\d+)(?:-(\d+))?)?", str_ref)
     #book_name = "Chapter"
-    book_name = self.book.title
+    book_name = self.top_reference().title
     if m:
       chap_start = safe_int(m.group(1))
       chap_end = safe_int(m.group(2))
@@ -50,13 +53,13 @@ class SimpleBookResource(Resource):
         return self.top_reference()
       if not start:
         if not chap_end:
-          return self.book.children()[fc]
+          return self.top_reference().children()[fc]
         else:
-          if chap_end > len(self.book.children()):
+          if chap_end > len(self.top_reference().children()):
             raise InvalidReferenceError()
           return ChapterRange(book_name,
-              self.book.children()[fc:chap_end])
-      chapter = self.book.children()[fc]
+              self.top_reference().children()[fc:chap_end])
+      chapter = self.top_reference().children()[fc]
       if not end:
         # leverage LineRange to extract a line
         return LineRange(book_name, chapter, start, start).children()[0]
