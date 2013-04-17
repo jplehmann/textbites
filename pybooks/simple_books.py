@@ -92,6 +92,9 @@ class Book(ReferenceImpl):
   def pretty(self):
     return self.title
 
+  def short(self):
+    return self.title
+
   def text(self):
     """ Too much text. """
     raise NotImplementedError()
@@ -113,6 +116,8 @@ class ChapterRange(ReferenceImpl):
     """
     self.book = book 
     self.chapters = chapters
+    self.first = self.chapters[0].num
+    self.last = self.chapters[-1].num
     # don't overwrite parent! ReferenceImpl.__init__(self)
 
   def children(self):
@@ -120,7 +125,10 @@ class ChapterRange(ReferenceImpl):
 
   def pretty(self):
     return "%s %d-%d" % (
-        self.book, self.chapters[0].num, self.chapters[-1].num)
+        self.book, self.first, self.last)
+
+  def short(self):
+    return "%d-%d" % (self.first, self.last)
 
   def text(self):
     raise NotImplementedError()
@@ -151,7 +159,7 @@ class Chapter(ReferenceImpl):
     return "%s %d" % (self.book, self.num)
 
   def short(self):
-    return self.num
+    return str(self.num)
 
   def text(self):
     return '\n'.join([l.text() for l in self.lines]).strip()
@@ -194,6 +202,9 @@ class LineRange(ReferenceImpl):
     s = self.chapter.pretty() + ":%d" % self.start
     return s if self.start == self.end else s+"-%d" % self.end
 
+  def short(self):
+    return "%d-%d" % (self.first, self.last)
+
   def text(self):
     raise NotImplementedError()
 
@@ -221,7 +232,7 @@ class Line(ReferenceImpl):
     return "%s %d:%d" % (self.book, self.cnum, self.lnum)
 
   def short(self):
-    return self.lnum
+    return str(self.lnum)
 
   def text(self):
     return self.line

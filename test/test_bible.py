@@ -130,6 +130,10 @@ class TestBibleBooksImplWithBible(unittest.TestCase):
   #  ref = self.res.reference("jn 3:1")
   #  self.assertEquals(len(ref), None)
 
+  def test_path(self):
+    ref = self.res.reference("jn 3:1-3")
+    self.assertEquals(ref.path(), "NASB/John 3:1-3")
+
 
   # TODO: move these into Bible project
   def test_normalize_book_name(self):

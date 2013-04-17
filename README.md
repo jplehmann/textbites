@@ -44,10 +44,31 @@ Questions
   - resource() on any ref could call to the top parent and then 
     retrieve the resource
 
+Just realized that my paths are not restful!!!  That the different layers contain overlapping information... So I can't just write a generic algorithm to create the fullpath.. .  it should be    VER/Book/Chap/Verse1-Verse2
+This means:
+1. in tagz i could parse the path and then pass that to reference()
+What i am trying to do is create a generic way of pathing...
+
+In the case of P&P, the top level is a book,.. the resource is 
+
+In the case of the bible, the top level is a Version, and it has a name accordingly.
+
+the top level reference should be enough to 
+
+I have created a 2 level lookup system:
+  resource / reference (that the resource knows)
+
+  So the path of hte top level thing is just its nmae.
+  The path of anyhthing else is its ref + the top level
+
 
 
 Todo
 ----
+- unit tests for
+  - path
+  - root
+  - resource
 x pybible behind pybooks interface
   x load into simple books impl
   x parse references

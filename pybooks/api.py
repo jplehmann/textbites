@@ -42,6 +42,7 @@ class Reference(object):
     # set parent for children
     if self.children():
       for child in self.children():
+        #print "Setting parent of %s to %s" % (child, self)
         child._parent = self
 
   def resource(self):
@@ -53,6 +54,14 @@ class Reference(object):
     """ Return a canonical string of this reference.
     """
     raise NotImplementedError()
+
+  def path(self):
+    """ Return the full reference string to the root.
+    """
+    root_ref = self.root().pretty()
+    if self == self.root():
+      return root_ref
+    return "/".join([root_ref, self.pretty()])
 
   def short(self):
     """ Shorter version of pretty with relative information.
@@ -92,8 +101,8 @@ class Reference(object):
     """ Top-most reference.
     """
     top = self
-    while self.parent() != None:
-      top = self.parent()
+    while top.parent() != None:
+      top = top.parent()
     return top
 
   def previous(self):
