@@ -37,7 +37,10 @@ class BookResource(Resource):
     for chapter in data.get("chapters"):
       lines = [l.strip() for l in chapter.get("text").split('\n')]
       chapters.append(lines)
-    return BookResource(title, author, chapters)
+    res = BookResource(title, author, chapters)
+    top_ref = res.top_reference()
+    top_ref._resource = res
+    return top_ref.resource()
 
   def __init__(self, title, author, chapters):
     """ Chapters should be a list of list of strings.
