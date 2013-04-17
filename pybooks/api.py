@@ -44,6 +44,11 @@ class Reference(object):
       for child in self.children():
         child._parent = self
 
+  def resource(self):
+    """ Return the resource that this is part of.
+    """
+    return self.root()._resource
+
   def pretty(self):
     """ Return a canonical string of this reference.
     """
@@ -82,6 +87,14 @@ class Reference(object):
       return self._parent
     except:
       return None
+
+  def root(self):
+    """ Top-most reference.
+    """
+    top = self
+    while self.parent() != None:
+      top = self.parent()
+    return top
 
   def previous(self):
     """ Return reference for previous or None.
