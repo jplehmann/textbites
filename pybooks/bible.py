@@ -49,7 +49,9 @@ class BibleResource(Resource):
           new_lines.append(Line(book_name, cnum, lnum, verse.getText()))
         new_chapters.append(Chapter(book_name, cnum, new_lines))
       new_books.append(Book(new_chapters, book_name))
-    return BibleResource(Bible(new_books, bible.getVersion()))
+    bible_ref = Bible(new_books, bible.getVersion())
+    bible_ref._resource = BibleResource(bible_ref)
+    return bible_ref.resource()
 
   def __init__(self, bible):
     """ Stores only the top reference.
@@ -77,12 +79,12 @@ class BibleResource(Resource):
       # handle implied book if they just said "chapter"
       if norm_book_name == None or book_name.lower() == "chapter":
         # if only 1 book, just return that
-        if len(self.bible.books) > 1:
+        if len(self.top_reference().books) > 1:
           raise UnparsableReferenceError("Book not found: " + book_name)
-        book = self.bible.children()[0]
+        book = self.top_reference().children()[0]
         book_name = book.title
       else:
-        book = self.bible.get_book(norm_book_name)
+        book = self.top_reference().get_book(norm_book_name)
         book_name = norm_book_name
       if not chap_start:
         return book
@@ -103,12 +105,12 @@ class BibleResource(Resource):
       return LineRange(book_name, chapter, start, end)
     # try to match a bookname by itself
     try:
-      return self.bible.get_book(str_ref)
+      return self.top_reference().get_book(str_ref)
     except:
       pass
     norm_book_name = bibleapi.normalize_book_name(str_ref)
     if norm_book_name != None:
-      return self.bible.get_book(norm_book_name)
+      return self.top_reference().get_book(norm_book_name)
     raise UnparsableReferenceError("Reference didn't match regex: " + str_ref)
 
   def top_reference(self):
