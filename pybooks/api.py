@@ -8,6 +8,11 @@ class Resource:
   """ Represents a textual resource which can provide references into it.
   """
 
+  def name(self):
+    """ Name is the pretty of the top reference.
+    """
+    return self.top_reference().pretty()
+
   def reference(self, string_ref):
     """ Parse this string reference and return an object. 
         Supports the following formats:
@@ -56,12 +61,13 @@ class Reference(object):
     raise NotImplementedError()
 
   def path(self):
-    """ Return the full reference string to the root.
+    """ Default relative path is pretty() except for root. This is
+        because resources are already namespaced under their resource
+        name which is this top level description.
     """
-    root_ref = self.root().pretty()
     if self == self.root():
-      return root_ref
-    return "/".join([root_ref, self.pretty()])
+      return ""
+    return self.pretty()
 
   def short(self):
     """ Shorter version of pretty with relative information.

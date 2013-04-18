@@ -30,7 +30,8 @@ TODO:
 
 Questions
 ---------
-- relationship of resource and reference
+Relationship of resource and reference
+{{{
   - in tagz, i want to have a set of top references
   - i want ot be able to ask them questiona bout their resource type
     too....
@@ -62,6 +63,23 @@ I have created a 2 level lookup system:
   The path of anyhthing else is its ref + the top level
 
 
+The issue is that I am treating the top ref specially.  All other levesl of refs get 1 level, and it gets 1 too.
+I give it a pretty name which equals the resource name, which doesn't make sense unless it and the resource are one in teh smae (which is doable)
+
+The reference should handle their own paths however, because they are the ones who know how to parse them.
+OPTIONS:
+1. simple approach: in tagz, treat the top level specially
+2. have path for the top level actually return "".
+3. resource handles its own paths, and the top reference is the root path.  This would require that the top level have its own namespace so that it could be uniquely identified against resources.
+
+For now I think doing the simple thing is fine. Generalize later if needed. Path is bette than pretty though.
+Let the resource's name be the top reference's name. Library will store it that way. The top level resource should have a path of "/"
+
+TODO:
+- in library get name from resource instead of passing it in
+  - make sure all resources have their name internal
+-   
+}}}
 
 Todo
 ----
