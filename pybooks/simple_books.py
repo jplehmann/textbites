@@ -206,7 +206,8 @@ class LineRange(ReferenceImpl):
     return "%d-%d" % (self.first, self.last)
 
   def text(self):
-    raise NotImplementedError()
+    return " ".join([l.text() for l in 
+        self.chapter.children()[self.start-1:self.end]])
 
   def search(self, pattern):
     return self.chapter.search(pattern, self.start, self.end)

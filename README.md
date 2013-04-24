@@ -1,4 +1,7 @@
 
+TODO:
+- unit test for linerange.text()
+
 pyBooks
 =======
 
