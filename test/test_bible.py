@@ -126,13 +126,41 @@ class TestBibleBooksImplWithBible(unittest.TestCase):
     ref = self.res.reference("jn")
     self.assertEquals(len(ref), 21)
 
+  def test_indices_line(self):
+    ref1 = self.res.reference("jn 3:1")
+    ref2 = self.res.reference("jn 3:2")
+    self.assertTrue(ref1.indices().start == ref1.indices().end)
+    self.assertTrue(ref2.indices().start == ref2.indices().end)
+    self.assertTrue(ref1.indices().start < ref2.indices().start)
+    self.assertTrue(ref1.indices().end < ref2.indices().end)
+    self.assertTrue(ref1.indices().end < ref2.indices().start)
+
+  def test_indices_range(self):
+    ref1 = self.res.reference("jn 3:1-3")
+    ref2 = self.res.reference("jn 3:2")
+    self.assertTrue(ref1.indices().start < ref1.indices().end)
+    self.assertTrue(ref1.indices().start < ref2.indices().start)
+    self.assertTrue(ref1.indices().end > ref2.indices().end)
+    self.assertTrue(ref1.indices().end > ref2.indices().start)
+
+  def test_indices_chapter(self):
+    ref1 = self.res.reference("jn 3")
+    self.assertTrue(ref1.indices().start < ref1.indices().end)
+    ref2 = self.res.reference("jn 3:1-36")
+    ref3 = self.res.reference("jn 2:25")
+    ref4 = self.res.reference("jn 4:1")
+    self.assertTrue(ref1.indices().start == ref2.indices().start)
+    self.assertTrue(ref1.indices().end == ref2.indices().end)
+    self.assertTrue(ref3.indices().end < ref1.indices().start)
+    self.assertTrue(ref4.indices().start > ref1.indices().end)
+
   #def test_line_length(self):
   #  ref = self.res.reference("jn 3:1")
   #  self.assertEquals(len(ref), None)
 
   def test_path(self):
     ref = self.res.reference("jn 3:1-3")
-    self.assertEquals(ref.path(), "NASB/John 3:1-3")
+    self.assertEquals(ref.path(), "John 3:1-3")
 
 
   # TODO: move these into Bible project

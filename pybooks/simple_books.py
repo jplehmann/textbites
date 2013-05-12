@@ -6,7 +6,7 @@ user.
 import re
 import logging
 
-from api import Reference, Resource, UnparsableReferenceError, InvalidReferenceError
+from api import Reference, Resource, UnparsableReferenceError, InvalidReferenceError, Index
 from .utils import *
 
 log = logging.getLogger(__name__)
@@ -22,10 +22,12 @@ class SimpleBookResource(Resource):
     chapters = []
     title = data.get("title")
     author = data.get("author")
+    line_num = 0
     for cnum, chapter in enumerate(data.get("chapters"), 1):
       lines = []
       for lnum, line in enumerate(chapter.get("text").split('\n'), 1):
-        lines.append(Line(title, cnum, lnum, line.strip()))
+        line_num += 1
+        lines.append(Line(title, cnum, lnum, line.strip(), line_num))
       chapters.append(Chapter(title, cnum, lines))
     book = Book(chapters, title, author)
     book._resource = SimpleBookResource(book)
@@ -219,11 +221,12 @@ class LineRange(ReferenceImpl):
 class Line(ReferenceImpl):
   """ A single line.
   """
-  def __init__(self, book, cnum, lnum, line):
+  def __init__(self, book, cnum, lnum, line, line_num):
     self.book = book
     self.line = line
     self.cnum = cnum
     self.lnum = lnum
+    self.line_num = line_num
     ReferenceImpl.__init__(self)
 
   def children(self):
@@ -253,5 +256,8 @@ class Line(ReferenceImpl):
     idx = siblings.index(self)
     # ending index beyond size is not a problem for slice
     return LineRange.from_lines(siblings[max(idx-size, 0):idx+size+1])
+
+  def indices(self):
+    return Index(self.line_num, self.line_num)
 
 

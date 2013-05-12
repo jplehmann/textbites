@@ -2,6 +2,7 @@
 """
 API for textual resources. These are abstract base classes.
 """
+from collections import namedtuple
 
 
 class Resource:
@@ -137,6 +138,15 @@ class Reference(object):
         pass
     return None
 
+  def indices(self):
+    """ Return a pair of integers representing the order of this reference
+    within the resource. Used for determining overlap between references
+    in the database. Base on start and end.
+    Defined recursively, so only lowest level needs an overridden impl.
+    """
+    return Index(self.children()[0].indices().start, 
+                 self.children()[-1].indices().end)
+
   def __len__(self):
     if self.children():
       return len(self.children())
@@ -152,6 +162,7 @@ class Reference(object):
     """ Don't want evaluation based on len(). """
     return 1
 
+Index = namedtuple('Index', ['start', 'end'])
 
 class UnparsableReferenceError(Exception):
   """ Reference format is not supported.

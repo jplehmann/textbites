@@ -35,6 +35,7 @@ class BibleResource(Resource):
     new_books = []
     # this returns book names in order -- and assumes 
     # this implementation has them.
+    line_num = 0
     for book in bible.getBooks():
       book_name = book.getName()
       #book_name = book.getName() if book_in_refs else "Chapter"
@@ -44,9 +45,10 @@ class BibleResource(Resource):
         assert cnum == chapter.getNumber()
         new_lines = []
         for lnum in xrange(1, chapter.getNumVerses()+1):
+          line_num += 1
           verse = chapter.getVerse(lnum)
           assert lnum == verse.getNumber()
-          new_lines.append(Line(book_name, cnum, lnum, verse.getText()))
+          new_lines.append(Line(book_name, cnum, lnum, verse.getText(), line_num))
         new_chapters.append(Chapter(book_name, cnum, new_lines))
       new_books.append(Book(new_chapters, book_name))
     bible_ref = Bible(new_books, bible.getVersion())
