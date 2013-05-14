@@ -7,14 +7,21 @@ Quotes are arranged by a top level which is the speaker name and then the quotes
 import re
 import logging
 
-from api import Reference, Resource, UnparsableReferenceError, InvalidReferenceError
+from api import Reference, Resource, UnparsableReferenceError, InvalidReferenceError, Index
 from .utils import *
 from collections import defaultdict
 
 log = logging.getLogger(__name__)
 
 
-class QuotesResource(Resource, Reference):
+class ReferenceImpl(Reference):
+  """ Represents some section of text.
+  """
+  def __init__(self):
+    Reference.__init__(self)
+
+
+class QuotesResource(Resource, ReferenceImpl):
 
   REF_DELIM = '::'
 
@@ -42,13 +49,15 @@ class QuotesResource(Resource, Reference):
         log.debug("Discarding w/ wrong # tokens: %s", vals)
     # build data
     people = []
+    res_index = 0
     for person, data in quote_dict.items():
+      res_index += 1
       quotes = []
       for qnum, quote_pair in enumerate(data, 1):
         date, quote = quote_pair
         #print qnum, date, quote
         qid = str(person+ QuotesResource.REF_DELIM + str(qnum))
-        quotes.append(Quote(person, quote, qid));
+        quotes.append(Quote(person, quote, qid, res_index));
       people.append(Person(person, quotes))
     return QuotesResource(people)
 
@@ -72,7 +81,7 @@ class QuotesResource(Resource, Reference):
     """ Stores only the top reference.
     """
     self.people = sorted(people, key=lambda x:x.name)
-    #print self.people
+    ReferenceImpl.__init__(self)
 
   def reference(self, str_ref):
     """ Parse this string reference as a person name, and return
@@ -119,25 +128,13 @@ class QuotesResource(Resource, Reference):
     return hits
 
 
-#class ReferenceImpl(Reference):
-#  """ Represents some section of text.
-#  """
-#  def __init__(self, resource):
-#    self._resource = resource
-#
-#  def ref_prefix(self):
-#    try:
-#      return self._resource.top_reference().title
-#    except Exception:
-#      return "Chapter"
-
-
-class Person(Reference):
+class Person(ReferenceImpl):
   """ A single person's quotes.
   """
   def __init__(self, name, quotes):
     self.name = name
     self.quotes = quotes
+    ReferenceImpl.__init__(self)
 
   def children(self):
     return self.quotes
@@ -155,13 +152,15 @@ class Person(Reference):
       hits.extend(q.search(pattern))
     return hits
 
-class Quote(Reference):
+class Quote(ReferenceImpl):
   """ A single quote.
   """
-  def __init__(self, speaker, quote, qid):
+  def __init__(self, speaker, quote, qid, res_index):
     self.speaker = speaker
     self.quote = quote
     self.qid = qid
+    self.res_index = res_index
+    ReferenceImpl.__init__(self)
 
   def children(self):
     return None
@@ -177,4 +176,7 @@ class Quote(Reference):
     if re.search(pattern, self.quote):
       return [self]
     return []
+
+  def indices(self):
+    return Index(self.res_index, self.res_index)
 
