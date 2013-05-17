@@ -46,7 +46,11 @@ class BibleResource(Resource):
         new_lines = []
         for lnum in xrange(1, chapter.getNumVerses()+1):
           line_num += 1
-          verse = chapter.getVerse(lnum)
+          try:
+            verse = chapter.getVerse(lnum)
+          except:
+            print "Couldn't load verse", book_name, cnum, lnum
+            continue
           assert lnum == verse.getNumber()
           new_lines.append(Line(book_name, cnum, lnum, verse.getText(), line_num))
         new_chapters.append(Chapter(book_name, cnum, new_lines))
