@@ -45,5 +45,6 @@ def load_resources():
     print "Couldn't load TEST1: " + str(e)
   add("TEST2", BibleResource.with_simple("TEST"))
   add("NASB", BibleResource.with_simple("NASB"))
+  add("NIV", BibleResource.with_simple("NIV"))
 
 
