@@ -13,7 +13,7 @@ import os.path
 def list():
   """ Return list of Resources available in this library.
   """
-  return _resources.keys()
+  return sorted(_resources.keys())
 
 def get(name):
   """ Retrieve resource of this name.
@@ -46,5 +46,7 @@ def load_resources():
   add("TEST2", BibleResource.with_simple("TEST"))
   add("NASB", BibleResource.with_simple("NASB"))
   add("NIV", BibleResource.with_simple("NIV"))
+  add("NKJV", BibleResource.with_simple("NKJV"))
+  add("NLT", BibleResource.with_simple("NLT"))
 
 
