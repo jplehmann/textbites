@@ -6,7 +6,7 @@ import os
 import os.path
 import json
 
-from pybooks.api import Reference, InvalidReferenceError
+from textbites.api import Reference, InvalidReferenceError
 
 
 DATA_FILE = os.path.join(os.path.dirname(__file__), "../data/pp-sample.json")

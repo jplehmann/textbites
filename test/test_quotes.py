@@ -7,7 +7,7 @@ import logging
 import json
 import os
 
-from pybooks.quotes import QuotesResource
+from textbites.quotes import QuotesResource
 #from test_books_base import TestInterface
 
 

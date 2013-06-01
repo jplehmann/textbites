@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 """
-Adapt Bible API into that which pybooks expects.
+Adapt Bible API into that which textbites expects.
 
 reference
   can largely delegate to  pybible

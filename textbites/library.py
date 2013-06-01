@@ -28,9 +28,9 @@ def add(name, resource):
 
 # TODO Move this somewhere!!
 def load_resources():
-  from pybooks.simple_books import SimpleBookResource
-  from pybooks.bible import BibleResource
-  from pybooks.quotes import QuotesResource
+  from textbites.simple_books import SimpleBookResource
+  from textbites.bible import BibleResource
+  from textbites.quotes import QuotesResource
   import json
   try:
     TEST1 = json.load(

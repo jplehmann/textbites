@@ -8,8 +8,8 @@ import logging
 import test_simple_books
 
 #from test_books_base import TestInterface
-from pybooks.bible import BibleResource
-from pybooks.simple_books import LineRange
+from textbites.bible import BibleResource
+from textbites.simple_books import LineRange
 
 # TODO remove this
 from pybible import data
