@@ -3,21 +3,12 @@
 Test functionality of books.
 """
 import unittest
-import logging
+
+from textbites.bible import BibleResource
 
 import test_simple_books
 
-#from test_books_base import TestInterface
-from textbites.bible import BibleResource
-from textbites.simple_books import LineRange
-
-# TODO remove this
-from pybible import data
-
-
 TEST_BIBLE = "TEST"
-
-logging.basicConfig(level=logging.DEBUG, format='%(name)s: %(message)s')
 
 
 class TestBibleBooksImpl(test_simple_books.TestSimpleBooksImpl, unittest.TestCase):
@@ -162,9 +153,9 @@ class TestBibleBooksImplWithBible(unittest.TestCase):
     ref = self.res.reference("jn 3:1-3")
     self.assertEquals(ref.path(), "John 3:1-3")
 
-
   # TODO: move these into Bible project
   def test_normalize_book_name(self):
+    from pybible import data
     self.assertEquals(data.normalize_book_name("John"), "John")
     self.assertEquals(data.normalize_book_name("jn"), "John")
     self.assertEquals(data.normalize_book_name("jN"), "John")

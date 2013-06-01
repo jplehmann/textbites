@@ -29,7 +29,6 @@ def add(name, resource):
 # TODO Move this somewhere!!
 def load_resources():
   from textbites.simple_books import SimpleBookResource
-  from textbites.bible import BibleResource
   from textbites.quotes import QuotesResource
   import json
   try:
@@ -43,10 +42,16 @@ def load_resources():
     add("QUOTES", QuotesResource.from_tsv(QUOTES))
   except Exception as e:
     print "Couldn't load TEST1: " + str(e)
-  add("TEST2", BibleResource.with_simple("TEST"))
-  add("NASB", BibleResource.with_simple("NASB"))
-  add("NIV", BibleResource.with_simple("NIV"))
-  add("NKJV", BibleResource.with_simple("NKJV"))
-  add("NLT", BibleResource.with_simple("NLT"))
+
+  # Bible-based resources
+  try:
+    from textbites.bible import BibleResource
+    add("TEST2", BibleResource.with_simple("TEST"))
+    add("NASB", BibleResource.with_simple("NASB"))
+    add("NIV", BibleResource.with_simple("NIV"))
+    add("NKJV", BibleResource.with_simple("NKJV"))
+    add("NLT", BibleResource.with_simple("NLT"))
+  except:
+    print "Could not load pybible-based resourcse."
 
 

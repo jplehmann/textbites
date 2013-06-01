@@ -3,7 +3,6 @@
 Test functionality of books.
 """
 import unittest
-import logging
 import os
 
 from textbites.quotes import QuotesResource
@@ -11,7 +10,6 @@ from textbites.quotes import QuotesResource
 
 JSON_DATA_FILE = os.path.join(os.path.dirname(__file__), "../data/quotes.json")
 TSV_DATA_FILE = os.path.join(os.path.dirname(__file__), "../data/quotes.tsv")
-logging.basicConfig(level=logging.INFO, format='%(name)s: %(message)s')
 
 
 class TestQuotesBooksImpl(unittest.TestCase):
