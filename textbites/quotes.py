@@ -11,6 +11,7 @@ from api import Reference, Resource, UnparsableReferenceError, InvalidReferenceE
 from .utils import *
 from collections import defaultdict
 
+
 log = logging.getLogger(__name__)
 
 
@@ -104,7 +105,7 @@ class QuotesResource(Resource, ReferenceImpl):
             ref = person.children()[int(num)-1]
             return ref
           except Exception as e:
-            print e
+            log.info("Can't parse reference: %s %s", str_ref, e)
             raise InvalidReferenceError
     return None
 

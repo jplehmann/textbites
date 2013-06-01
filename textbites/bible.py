@@ -12,6 +12,7 @@ will i have different objects depening onw hat got parsed?
 
 """
 import re
+import logging
 
 from api import Reference
 from api import Resource
@@ -22,6 +23,9 @@ from .utils import *
 from .simple_books import Book, ChapterRange, Chapter, LineRange, Line
 
 from pybible import api as bibleapi
+
+
+log = logging.getLogger(__name__)
 
 
 class BibleResource(Resource):
@@ -49,7 +53,7 @@ class BibleResource(Resource):
           try:
             verse = chapter.getVerse(lnum)
           except:
-            print "Couldn't load verse", book_name, cnum, lnum
+            log.warning("Couldn't load verse %s %s %s", book_name, cnum, lnum)
             continue
           assert lnum == verse.getNumber()
           new_lines.append(Line(book_name, cnum, lnum, verse.getText(), line_num))
