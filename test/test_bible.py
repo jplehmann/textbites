@@ -4,7 +4,7 @@ Test functionality of books.
 """
 import unittest
 
-from textbites.bible import BibleResource
+from textbites.bible.bible import BibleResource
 
 import test_simple_books
 
@@ -18,7 +18,8 @@ class TestBibleBooksImpl(test_simple_books.TestSimpleBooksImpl, unittest.TestCas
 
   @classmethod
   def setUpClass(cls):
-    cls.res = BibleResource.with_simple(TEST_BIBLE)
+    #cls.res = BibleResource.with_simple(TEST_BIBLE)
+    cls.res = BibleResource.from_fastformat(TEST_BIBLE)
 
   def setUp(self):
     self.res = TestBibleBooksImpl.res
@@ -35,7 +36,8 @@ class TestBibleBooksImplWithBible(unittest.TestCase):
 
   @classmethod
   def setUpClass(cls):
-    cls.res = BibleResource.with_simple()
+    #cls.res = BibleResource.with_simple()
+    cls.res = BibleResource.from_fastformat("NASB")
 
   def test_first_and_last_books(self):
     bible = self.res.top_reference()
@@ -155,13 +157,13 @@ class TestBibleBooksImplWithBible(unittest.TestCase):
 
   # TODO: move these into Bible project
   def test_normalize_book_name(self):
-    from pybible import data
-    self.assertEquals(data.normalize_book_name("John"), "John")
-    self.assertEquals(data.normalize_book_name("jn"), "John")
-    self.assertEquals(data.normalize_book_name("jN"), "John")
-    self.assertEquals(data.normalize_book_name("1jn"), "1 John")
-    self.assertEquals(data.normalize_book_name("1jn"), "1 John")
-    self.assertEquals(data.normalize_book_name("mk"), "Mark")
+    from textbites.bible.bibleapi import normalize_book_name
+    self.assertEquals(normalize_book_name("John"), "John")
+    self.assertEquals(normalize_book_name("jn"), "John")
+    self.assertEquals(normalize_book_name("jN"), "John")
+    self.assertEquals(normalize_book_name("1jn"), "1 John")
+    self.assertEquals(normalize_book_name("1jn"), "1 John")
+    self.assertEquals(normalize_book_name("mk"), "Mark")
 
 
 
