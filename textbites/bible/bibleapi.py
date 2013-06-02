@@ -11,11 +11,15 @@ def bible_file(name):
   # moved into this repo for disting
   # TODO: Load from other project?
   base = os.path.join(os.path.dirname(__file__), "../../data")
-  return file(os.path.join(base, name))
+  return file(os.path.join(base, name), 'r')
 
 
 def get_trans_file(trans):
-  return bible_file("%s_bible.txt" % trans)
+  return bible_file("%s.bible.txt" % trans)
+
+
+def get_trans_json_file(trans):
+  return bible_file("%s.bible.json" % trans)
 
 
 def abbrToName(abbr): 

@@ -18,8 +18,7 @@ class TestBibleBooksImpl(test_simple_books.TestSimpleBooksImpl, unittest.TestCas
 
   @classmethod
   def setUpClass(cls):
-    #cls.res = BibleResource.with_simple(TEST_BIBLE)
-    cls.res = BibleResource.from_fastformat(TEST_BIBLE)
+    cls.res = BibleResource.from_json(TEST_BIBLE)
 
   def setUp(self):
     self.res = TestBibleBooksImpl.res
@@ -36,8 +35,7 @@ class TestBibleBooksImplWithBible(unittest.TestCase):
 
   @classmethod
   def setUpClass(cls):
-    #cls.res = BibleResource.with_simple()
-    cls.res = BibleResource.from_fastformat("NASB")
+    cls.res = BibleResource.from_json("NKJV")
 
   def test_first_and_last_books(self):
     bible = self.res.top_reference()
@@ -76,7 +74,7 @@ class TestBibleBooksImplWithBible(unittest.TestCase):
     ref = self.res.reference("jn")
     hits = ref.search("believe")
     hit_refs = [h.pretty() for h in hits]
-    self.assertEquals(len(hit_refs), 80)
+    self.assertEquals(len(hit_refs), 84)
     self.assertTrue("John 5:24" in hit_refs)
 
   # TODO: move these into simple but I wanted

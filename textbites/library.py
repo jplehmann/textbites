@@ -44,14 +44,11 @@ def load_resources():
     print "Couldn't load TEST1: " + str(e)
 
   # Bible-based resources
-  try:
-    from textbites.bible import BibleResource
-    add("TEST2", BibleResource.with_simple("TEST"))
-    add("NASB", BibleResource.with_simple("NASB"))
-    add("NIV", BibleResource.with_simple("NIV"))
-    add("NKJV", BibleResource.with_simple("NKJV"))
-    add("NLT", BibleResource.with_simple("NLT"))
-  except:
-    print "Could not load pybible-based resourcse."
+  for trans in ["TEST2", "NASB", "NIV", "NKJV", "NLT"]:
+    try:
+      from textbites.bible.bible import BibleResource
+      add(trans, BibleResource.from_fastformat(trans))
+    except Exception as e:
+      print "Could not load pybible-based resourcse. ", e
 
 

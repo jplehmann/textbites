@@ -13,6 +13,7 @@ will i have different objects depening onw hat got parsed?
 """
 import re
 import logging
+import json
 
 from textbites.api import Reference
 from textbites.api import Resource
@@ -30,35 +31,28 @@ log = logging.getLogger(__name__)
 class BibleResource(Resource):
 
   @staticmethod
-  def with_simple(trans=None):
-    bibleapi.init(trans)
-    """ Load the pybible.Bible into SimpleBook data structures.
+  def from_json(trans=None):
+    """ Load the bible into SimpleBook data structures.
     """
-    bible = bibleapi.get_bible(trans)
+    bible = json.load(bibleapi.get_trans_json_file(trans))
     new_books = []
     # this returns book names in order -- and assumes 
     # this implementation has them.
     line_num = 0
-    for book in bible.getBooks():
-      book_name = book.getName()
-      #book_name = book.getName() if book_in_refs else "Chapter"
+    for book in bible['books']:
+      book_name = book['name']
       new_chapters = []
-      for cnum in xrange(1, book.getNumChapters()+1):
-        chapter = book.getChapter(cnum)
-        assert cnum == chapter.getNumber()
+      for chapter in book['chapters']:
+        #assert cnum == chapter.getNumber()
+        cnum = chapter['num']
         new_lines = []
-        for lnum in xrange(1, chapter.getNumVerses()+1):
+        for line in chapter['verses']:
           line_num += 1
-          try:
-            verse = chapter.getVerse(lnum)
-          except:
-            log.warning("Couldn't load verse %s %s %s", book_name, cnum, lnum)
-            continue
-          assert lnum == verse.getNumber()
-          new_lines.append(Line(book_name, cnum, lnum, verse.getText(), line_num))
+          #assert lnum == verse.getNumber()
+          new_lines.append(Line(book_name, cnum, line['num'], line['text'], line_num))
         new_chapters.append(Chapter(book_name, cnum, new_lines))
       new_books.append(Book(new_chapters, book_name))
-    bible_ref = Bible(new_books, bible.getVersion())
+    bible_ref = Bible(new_books, bible['version'])
     bible_ref._resource = BibleResource(bible_ref)
     return bible_ref.resource()
 

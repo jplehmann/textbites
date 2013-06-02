@@ -5,7 +5,6 @@ Backlog
   - path
   - root
   - resource
-- ditch pybible
 - fold extensions from bible back into simple
 - use a single algorithm for reference resolution
 
