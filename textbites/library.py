@@ -62,7 +62,9 @@ def dynamically_load_dir(dirname):
 
 # TODO Move this somewhere!!
 def load_resources():
-  dynamically_load_dir("data")
+  # for disting
+  data_dir = os.path.join(os.path.dirname(__file__), "data")
+  dynamically_load_dir(data_dir)
 
   #from textbites.simple_books import SimpleBookResource
   #from textbites.quotes import QuotesResource
