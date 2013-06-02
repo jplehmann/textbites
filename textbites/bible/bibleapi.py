@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 """
-Clean, single interface to Bible code.
+Clean, single interface to Bible code, of what used to reside in 
+another project.
 """
 import os.path
 import data

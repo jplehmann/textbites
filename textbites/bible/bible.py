@@ -1,15 +1,7 @@
 #! /usr/bin/env python
 """
-Adapt Bible API into that which textbites expects.
-
-reference
-  can largely delegate to  pybible
-
-will i have different objects depening onw hat got parsed?
-- need to rcognize different types of refs
-- need to be able to go through children
-
-
+Subclass of SimpleBook for Bible which includes parsing a JSON format
+and resolving references.
 """
 import re
 import logging
