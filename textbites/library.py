@@ -4,10 +4,12 @@ Like a service locator for book resources.
 As a module to be a singleton.
 """
 
+import os
+import re
+import os.path
+
 _resources = {}
 
-
-import os.path
 
 
 def list():
@@ -25,9 +27,40 @@ def add(name, resource):
   """
   _resources[name] = resource
 
+def dynamically_load_dir(dirname):
+  from textbites.simple_books import SimpleBookResource
+  from textbites.quotes import QuotesResource
+  from textbites.bible.bible import BibleResource
+
+  suffix_map = { "simple.json" : SimpleBookResource.from_json,
+                 "quotes.tsv" : QuotesResource.from_tsv,
+                 "bible.json" : BibleResource.from_json }
+
+  for f in os.listdir(dirname):
+    print f
+    data = open(os.path.join(dirname, f), 'r')
+
+    # don't load files staring with underscore
+    if (f.startswith("_")):
+      continue
+
+    # load file according to its type based on the map
+    added = False
+    for pattern in suffix_map:
+      if (f.endswith(pattern)):
+        file_handle = suffix_map.get(pattern)(data)
+        add(re.sub("\." + pattern + "$", "", f), file_handle)
+        added = True
+        break
+
+    if not added:
+      print "Unknown resource format for file:", f
+  print "Dynamically loaded library of:", _resources.keys()
+
 
 # TODO Move this somewhere!!
 def load_resources():
+  #dynamically_load_dir("../data")
   from textbites.simple_books import SimpleBookResource
   from textbites.quotes import QuotesResource
   import json
@@ -52,3 +85,4 @@ def load_resources():
       print "Could not load pybible-based resourcse. ", e
 
 
+#dynamically_load_dir("/home/john/git/textbites/data")

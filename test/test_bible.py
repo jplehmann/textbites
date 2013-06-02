@@ -8,8 +8,6 @@ from textbites.bible.bible import BibleResource
 
 import test_simple_books
 
-TEST_BIBLE = "TEST"
-
 
 class TestBibleBooksImpl(test_simple_books.TestSimpleBooksImpl, unittest.TestCase):
   """ Create the implementation-specific system under test which 
@@ -18,7 +16,7 @@ class TestBibleBooksImpl(test_simple_books.TestSimpleBooksImpl, unittest.TestCas
 
   @classmethod
   def setUpClass(cls):
-    cls.res = BibleResource.from_json(TEST_BIBLE)
+    cls.res = BibleResource.from_json("_PnP_Sample.bible.json")
 
   def setUp(self):
     self.res = TestBibleBooksImpl.res

@@ -8,6 +8,7 @@ import logging
 
 from api import Reference, Resource, UnparsableReferenceError, InvalidReferenceError, Index
 from .utils import *
+import json
 
 log = logging.getLogger(__name__)
 
@@ -15,10 +16,11 @@ log = logging.getLogger(__name__)
 class SimpleBookResource(Resource):
 
   @staticmethod
-  def from_json(data):
+  def from_json(json_file):
     """ Create a XXX book & resource from json data.
         Assumes title, author, chapters/text
     """
+    data = json.load(json_file)
     chapters = []
     title = data.get("title")
     author = data.get("author")
