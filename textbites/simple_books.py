@@ -16,11 +16,11 @@ log = logging.getLogger(__name__)
 class SimpleBookResource(Resource):
 
   @staticmethod
-  def from_json(json_file):
+  def from_json(json_filename):
     """ Create a XXX book & resource from json data.
         Assumes title, author, chapters/text
     """
-    data = json.load(json_file)
+    data = json.load(open(json_filename, 'r'))
     chapters = []
     title = data.get("title")
     author = data.get("author")

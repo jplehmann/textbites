@@ -4,12 +4,11 @@ Test functionality of books.
 """
 import os
 import os.path
-import json
 
 from textbites.api import Reference, InvalidReferenceError
 
 
-DATA_FILE = os.path.join(os.path.dirname(__file__), "../data/pp-sample.json")
+DATA_FILE = os.path.join(os.path.dirname(__file__), "../textbites/data/PnP_Sample.simple.json")
 BOOK_NAME = "PRIDE AND PREJUDICE"
 
 
@@ -20,8 +19,7 @@ class TestInterface():
 
   @classmethod
   def setUpClass(cls):
-    TestInterface.data = json.load(open(DATA_FILE))
-    #print TestInterface.data
+    TestInterface.data_filename = DATA_FILE
 
   # Resource top_reference()
   def test_resource_top_reference(self):

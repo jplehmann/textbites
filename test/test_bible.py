@@ -7,6 +7,11 @@ import unittest
 from textbites.bible.bible import BibleResource
 
 import test_simple_books
+import os.path
+
+
+SAMPLE_FILE = os.path.join(os.path.dirname(__file__), "../textbites/data/_PnP_Sample.bible.json")
+BIBLE_FILE = os.path.join(os.path.dirname(__file__), "../textbites/data/NKJV.bible.json")
 
 
 class TestBibleBooksImpl(test_simple_books.TestSimpleBooksImpl, unittest.TestCase):
@@ -16,7 +21,7 @@ class TestBibleBooksImpl(test_simple_books.TestSimpleBooksImpl, unittest.TestCas
 
   @classmethod
   def setUpClass(cls):
-    cls.res = BibleResource.from_json("_PnP_Sample.bible.json")
+    cls.res = BibleResource.from_json(SAMPLE_FILE);
 
   def setUp(self):
     self.res = TestBibleBooksImpl.res
@@ -33,7 +38,7 @@ class TestBibleBooksImplWithBible(unittest.TestCase):
 
   @classmethod
   def setUpClass(cls):
-    cls.res = BibleResource.from_json("NKJV")
+    cls.res = BibleResource.from_json(BIBLE_FILE)
 
   def test_first_and_last_books(self):
     bible = self.res.top_reference()

@@ -8,8 +8,7 @@ import os
 from textbites.quotes import QuotesResource
 
 
-JSON_DATA_FILE = os.path.join(os.path.dirname(__file__), "../data/quotes.json")
-TSV_DATA_FILE = os.path.join(os.path.dirname(__file__), "../data/quotes.tsv")
+TSV_DATA_FILE = os.path.join(os.path.dirname(__file__), "../textbites/data/Quotes.quotes.tsv")
 
 
 class TestQuotesBooksImpl(unittest.TestCase):
@@ -18,8 +17,7 @@ class TestQuotesBooksImpl(unittest.TestCase):
   """
 
   def setUp(self):
-    #self.res = QuotesResource.from_json(json.load(open(JSON_DATA_FILE)))
-    self.res = QuotesResource.from_tsv(open(TSV_DATA_FILE))
+    self.res = QuotesResource.from_tsv(TSV_DATA_FILE)
   
   def test_children(self):
     speakers = self.res.top_reference().children()

@@ -2,10 +2,11 @@ from distutils.core import setup
 
 setup(
     name='textbites',
-    version='0.1.5',
+    version='0.2.0',
     author='John Lehmann',
     author_email='john.lehmann@gmail.com',
-    packages=['textbites'],
+    packages=['textbites', 'textbites.bible'],
+    package_data={'textbites': ['data/*']},
     scripts=[],
     url='',
     license='LICENSE.txt',

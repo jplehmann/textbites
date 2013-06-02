@@ -23,10 +23,10 @@ log = logging.getLogger(__name__)
 class BibleResource(Resource):
 
   @staticmethod
-  def from_json(json_file=None):
+  def from_json(json_filename=None):
     """ Load the bible into SimpleBook data structures.
     """
-    bible = json.load(json_file)
+    bible = json.load(open(json_filename, 'r'))
     new_books = []
     # this returns book names in order -- and assumes 
     # this implementation has them.

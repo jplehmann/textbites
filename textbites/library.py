@@ -28,6 +28,8 @@ def add(name, resource):
   _resources[name] = resource
 
 def dynamically_load_dir(dirname):
+  """ Load resources in given directory based on suffix.
+  """
   from textbites.simple_books import SimpleBookResource
   from textbites.quotes import QuotesResource
   from textbites.bible.bible import BibleResource
@@ -38,7 +40,7 @@ def dynamically_load_dir(dirname):
 
   for f in os.listdir(dirname):
     print f
-    data = open(os.path.join(dirname, f), 'r')
+    datafile = os.path.join(dirname, f)
 
     # don't load files staring with underscore
     if (f.startswith("_")):
@@ -48,7 +50,7 @@ def dynamically_load_dir(dirname):
     added = False
     for pattern in suffix_map:
       if (f.endswith(pattern)):
-        file_handle = suffix_map.get(pattern)(data)
+        file_handle = suffix_map.get(pattern)(datafile)
         add(re.sub("\." + pattern + "$", "", f), file_handle)
         added = True
         break
@@ -60,29 +62,30 @@ def dynamically_load_dir(dirname):
 
 # TODO Move this somewhere!!
 def load_resources():
-  #dynamically_load_dir("../data")
-  from textbites.simple_books import SimpleBookResource
-  from textbites.quotes import QuotesResource
-  import json
-  try:
-    TEST1 = json.load(
-        open(os.path.join(os.path.dirname(__file__), "../data/pp-sample.json")))
-    add("TEST1", SimpleBookResource.from_json(TEST1))
-  except Exception as e:
-    print "Couldn't load TEST1: " + str(e)
-  try:
-    QUOTES = open(os.path.join(os.path.dirname(__file__), "../data/quotes.tsv"))
-    add("QUOTES", QuotesResource.from_tsv(QUOTES))
-  except Exception as e:
-    print "Couldn't load TEST1: " + str(e)
+  dynamically_load_dir("data")
 
-  # Bible-based resources
-  for trans in ["TEST2", "NASB", "NIV", "NKJV", "NLT"]:
-    try:
-      from textbites.bible.bible import BibleResource
-      add(trans, BibleResource.from_fastformat(trans))
-    except Exception as e:
-      print "Could not load pybible-based resourcse. ", e
+  #from textbites.simple_books import SimpleBookResource
+  #from textbites.quotes import QuotesResource
+  #import json
+  #try:
+  #  TEST1 = json.load(
+  #      open(os.path.join(os.path.dirname(__file__), "data/pp-sample.json")))
+  #  add("TEST1", SimpleBookResource.from_json(TEST1))
+  #except Exception as e:
+  #  print "Couldn't load TEST1: " + str(e)
+  #try:
+  #  QUOTES = open(os.path.join(os.path.dirname(__file__), "data/quotes.tsv"))
+  #  add("QUOTES", QuotesResource.from_tsv(QUOTES))
+  #except Exception as e:
+  #  print "Couldn't load TEST1: " + str(e)
+
+  ## Bible-based resources
+  #for trans in ["TEST2", "NASB", "NIV", "NKJV", "NLT"]:
+  #  try:
+  #    from textbites.bible.bible import BibleResource
+  #    add(trans, BibleResource.from_fastformat(trans))
+  #  except Exception as e:
+  #    print "Could not load pybible-based resourcse. ", e
 
 
 #dynamically_load_dir("/home/john/git/textbites/data")

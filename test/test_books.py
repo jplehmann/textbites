@@ -15,7 +15,7 @@ class TestBooksImpl(TestInterface, unittest.TestCase):
   """
 
   def setUp(self):
-    self.res = BookResource.from_json(TestInterface.data)
+    self.res = BookResource.from_json(TestInterface.data_filename)
 
   def get_test_book(self):
     return self.res.top_reference()

@@ -23,14 +23,16 @@ import re
 
 from api import Reference, Resource, UnparsableReferenceError, InvalidReferenceError
 from .utils import *
+import json
 
 class BookResource(Resource):
 
   @staticmethod
-  def from_json(data):
+  def from_json(json_filename):
     """ Create a resource from json data.
         Assumes title, author, chapters/text
     """
+    data = json.load(open(json_filename, 'r'))
     title = data.get("title")
     author = data.get("author")
     chapters = []

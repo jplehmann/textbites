@@ -10,6 +10,7 @@ import logging
 from api import Reference, Resource, UnparsableReferenceError, InvalidReferenceError, Index
 from .utils import *
 from collections import defaultdict
+import json
 
 
 log = logging.getLogger(__name__)
@@ -27,7 +28,8 @@ class QuotesResource(Resource, ReferenceImpl):
   REF_DELIM = '::'
 
   @staticmethod
-  def from_tsv(data):
+  def from_tsv(data_filename):
+    data = open(data_filename, 'r')
     # multimap
     quote_dict = defaultdict(list)
     for line in data.readlines():
