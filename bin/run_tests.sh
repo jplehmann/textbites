@@ -1,1 +1,1 @@
-python  -m unittest "$@" test.test_library test.test_books test.test_simple_books test.test_quotes 
+python  -m unittest "$@" test.test_library test.test_books test.test_simple_books test.test_quotes test.test_bible
