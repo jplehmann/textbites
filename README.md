@@ -43,6 +43,10 @@ for more details.
   * Quotes
 * ViewBooks (alternate design)
 
+Tests
+-----
+Over 100 unit tests can be run with `bin/run_tests.sh`.
+
 Future
 ------
 Currently, all implementations are static, in-memory resources. This is a big
