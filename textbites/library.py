@@ -27,8 +27,8 @@ def add(name, resource):
   """
   _resources[name] = resource
 
-def dynamically_load_dir(dirname):
-  """ Load resources in given directory based on suffix.
+def load(datafile):
+  """ Returns true if loaded.
   """
   from textbites.simple_books import SimpleBookResource
   from textbites.quotes import QuotesResource
@@ -38,6 +38,18 @@ def dynamically_load_dir(dirname):
                  "quotes.tsv" : QuotesResource.from_tsv,
                  "bible.json" : BibleResource.from_json }
 
+  # load file according to its type based on the map
+  for pattern in suffix_map:
+    if (datafile.endswith(pattern)):
+      file_handle = suffix_map.get(pattern)(datafile)
+      add(re.sub("\." + pattern + "$", "", os.path.basename(datafile)), file_handle)
+      return True
+
+  return False
+
+def dynamically_load_dir(dirname):
+  """ Load resources in given directory based on suffix.
+  """
   for f in os.listdir(dirname):
     print f
     datafile = os.path.join(dirname, f)
@@ -46,17 +58,9 @@ def dynamically_load_dir(dirname):
     if (f.startswith("_")):
       continue
 
-    # load file according to its type based on the map
-    added = False
-    for pattern in suffix_map:
-      if (f.endswith(pattern)):
-        file_handle = suffix_map.get(pattern)(datafile)
-        add(re.sub("\." + pattern + "$", "", f), file_handle)
-        added = True
-        break
-
-    if not added:
+    if not load(datafile):
       print "Unknown resource format for file:", f
+
   print "Dynamically loaded library of:", _resources.keys()
 
 
