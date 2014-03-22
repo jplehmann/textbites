@@ -47,10 +47,14 @@ def load_library(resources):
   return dict([(k.lower(),library.get(k)) for k in library.list()])
 
 def main(args):
+  def cur_resname():
+    return cur_resource.top_reference().pretty()
+
   setup_readline()
   resources = load_library(args[1:])
   # default is first resource loaded
   cur_resource = resources.values()[0]
+  print "Setting resource to:", cur_resname()
   # for searching
   context = [cur_resource.top_reference()]
 
@@ -70,9 +74,10 @@ def main(args):
     print "Searching context {} with query...\n".format(context_str())
     results = [r for c in context for r in search_context(query, c)]
     for ref in results:
-      print "{text} ({ref})".format(
+      print "{text} ({ref} {res})".format(
         text=ref.text(), 
-        ref=ref.pretty()
+        ref=ref.pretty(),
+        res=cur_resname()
       )
       print
     print "Displayed", len(results), "results."
@@ -84,17 +89,19 @@ def main(args):
       text = None
     # verse(s)/line(s)
     if text and not ref.children():
-      print "{text} ({ref})".format(
+      print "{text} ({ref} {res})".format(
         text=ref.text(), 
-        ref=ref.pretty()
+        ref=ref.pretty(),
+        res=cur_resname()
       )
     # multiple verses or one chapter
     elif text and ref.children():
       v_format = "{text}" if len(ref.children()) < 10 else "{num} {text}"
-      print "{text} ({ref})".format(
+      print "{text} ({ref} {res})".format(
         text=" ".join([v_format.format(num=v.short(), text=v.text()) 
                                            for v in ref.children()]),
-        ref=ref.pretty()
+        ref=ref.pretty(),
+        res=cur_resname()
       )
     # book or chapters
     elif not text:
@@ -111,7 +118,7 @@ def main(args):
     query = raw_input("> ")
     if query in resources:
       cur_resource = resources.get(query)
-      print "Setting resource to:", cur_resource.top_reference().pretty()
+      print "Setting resource to:", cur_resname()
       context = [cur_resource.top_reference()]
     elif query in BOOK_GROUPS:
       context = [cur_resource.reference(b) for b in BOOK_GROUPS.get(query)]
