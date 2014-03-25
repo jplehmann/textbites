@@ -7,6 +7,7 @@ usage: interactive.py [resource name]*
 """
 import readline
 import sys
+import re
 
 from textbites import library
 try:
@@ -115,31 +116,39 @@ def main(args):
       del context[1:]
       context[0] = ref
 
+  def tokenize_query(rawquery):
+    def clean(q):
+      return q.strip().replace('.', ':')
+    # Split on ; or ,
+    # Split on comma only if followed by book ref
+    return [clean(q) for q in re.split(",|;", rawquery)]
+
   # REPL Loop.
   while True:
     print "---"
-    query = raw_input("> ")
-    if query in resources:
-      cur_resource = resources.get(query)
-      print "Setting resource to:", cur_resname()
-      context = [cur_resource.top_reference()]
-    elif query in BOOK_GROUPS:
-      context = [cur_resource.reference(b) for b in BOOK_GROUPS.get(query)]
-      print "Setting resource to:", context_str()
-    elif query.startswith("format"):
-      if query == "format lines":
-        one_per_line = True
-      elif query == "format block":
-        one_per_line = False
-      else:
-        print "Say 'format lines' or 'format block'"
-    elif len(query.strip()):
-      try:
-        ref = cur_resource.reference(query)
-        display_one_ref(ref)
-      except Exception as e:
-        print e
-        search(query)
+    raw_query = raw_input("> ")
+    for query in tokenize_query(raw_query):
+      if query in resources:
+        cur_resource = resources.get(query)
+        print "Setting resource to:", cur_resname()
+        context = [cur_resource.top_reference()]
+      elif query in BOOK_GROUPS:
+        context = [cur_resource.reference(b) for b in BOOK_GROUPS.get(query)]
+        print "Setting resource to:", context_str()
+      elif query.startswith("format"):
+        if query == "format lines":
+          one_per_line = True
+        elif query == "format block":
+          one_per_line = False
+        else:
+          print "Say 'format lines' or 'format block'"
+      elif len(query.strip()):
+        try:
+          ref = cur_resource.reference(query)
+          display_one_ref(ref)
+        except Exception as e:
+          print e
+          search(query)
 
 if __name__ == "__main__":
   main(sys.argv)
