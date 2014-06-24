@@ -148,7 +148,7 @@ def main(args):
           display_one_ref(ref)
         except Exception as e:
           print e
-          search(query)
+          search(raw_query)
 
 if __name__ == "__main__":
   main(sys.argv)
