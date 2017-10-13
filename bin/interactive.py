@@ -135,6 +135,8 @@ def main(args):
       elif query in BOOK_GROUPS:
         context = [cur_resource.reference(b) for b in BOOK_GROUPS.get(query)]
         print "Setting resource to:", context_str()
+      elif query in ('help', '?'):
+        print "Valid input: <resource|refernce|book or group to scope|search> or format <lines|block>"
       elif query.startswith("format"):
         if query == "format lines":
           one_per_line = True
@@ -146,6 +148,7 @@ def main(args):
         try:
           ref = cur_resource.reference(query)
           display_one_ref(ref)
+          print
         except Exception as e:
           print e
           search(raw_query)
