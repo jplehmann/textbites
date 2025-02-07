@@ -126,7 +126,10 @@ def main(args):
   # REPL Loop.
   while True:
     print("---")
-    raw_query = input("> ")
+    try:
+        raw_query = input("> ")
+    except EOFError:
+        break
     for query in tokenize_query(raw_query):
       if query in resources:
         cur_resource = resources.get(query)
