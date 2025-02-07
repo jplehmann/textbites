@@ -1,1 +1,3 @@
 *.pyc
+# Ignore Python egg-info metadata
+textbites.egg-info/
