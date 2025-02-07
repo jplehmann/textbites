@@ -12,7 +12,7 @@ _resources = {}
 
 
 
-def list():
+def resources():
   """ Return list of Resources available in this library.
   """
   return sorted(_resources.keys())
@@ -61,7 +61,7 @@ def dynamically_load_dir(dirname):
     if not load(datafile):
       print("Unknown resource format for file:", f)
 
-  print("Dynamically loaded library of:", list(_resources.keys()))
+  print("Dynamically loaded library of:", resources())
 
 
 # TODO Move this somewhere!!

@@ -43,9 +43,9 @@ def load_library(resources):
   else:
     # load everything we find
     library.load_resources()
-  print("Loading into library:", library.list())
+  print("Loading into library:", library.resources())
   # map to lowercase resource names
-  return dict([(k.lower(),library.get(k)) for k in library.list()])
+  return dict([(k.lower(),library.get(k)) for k in library.resources()])
 
 def main(args):
   def cur_resname():
