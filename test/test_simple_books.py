@@ -4,7 +4,7 @@ Test functionality of books.
 """
 import unittest
 
-from test_books_base import TestInterface
+from .test_books_base import TestInterface
 from textbites.simple_books import SimpleBookResource
 
 

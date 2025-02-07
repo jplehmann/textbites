@@ -6,7 +6,7 @@ user.
 import re
 import logging
 
-from api import Reference, Resource, UnparsableReferenceError, InvalidReferenceError, Index
+from .api import Reference, Resource, UnparsableReferenceError, InvalidReferenceError, Index
 from .utils import *
 import json
 

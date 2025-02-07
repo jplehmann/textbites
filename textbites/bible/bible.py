@@ -14,7 +14,7 @@ from textbites.api import InvalidReferenceError
 from textbites.utils import *
 from textbites.simple_books import Book, ChapterRange, Chapter, LineRange, Line
 
-import bibleapi
+from . import bibleapi
 
 logging.basicConfig(level=logging.DEBUG, format='%(message)s')
 log = logging.getLogger(__name__)

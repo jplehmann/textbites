@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 """
 Interactive interface for querying textbites resources.
 
@@ -43,7 +43,7 @@ def load_library(resources):
   else:
     # load everything we find
     library.load_resources()
-  print "Loading into library:", library.list()
+  print("Loading into library:", library.list())
   # map to lowercase resource names
   return dict([(k.lower(),library.get(k)) for k in library.list()])
 
@@ -54,8 +54,8 @@ def main(args):
   setup_readline()
   resources = load_library(args[1:])
   # default is first resource loaded
-  cur_resource = resources.values()[0]
-  print "Setting resource to:", cur_resname()
+  cur_resource = list(resources.values())[0]
+  print("Setting resource to:", cur_resname())
   # for searching
   context = [cur_resource.top_reference()]
   # prefer single lines to block
@@ -74,16 +74,16 @@ def main(args):
       return context.search(query)
 
   def search(query):
-    print "Searching context {} with query...\n".format(context_str())
+    print("Searching context {} with query...\n".format(context_str()))
     results = [r for c in context for r in search_context(query, c)]
     for ref in results:
-      print "{text} ({ref} {res})".format(
+      print("{text} ({ref} {res})".format(
         text=ref.text(), 
         ref=ref.pretty(),
         res=cur_resname()
-      )
-      print
-    print "Displayed", len(results), "results."
+      ))
+      print()
+    print("Displayed", len(results), "results.")
 
   def format_lines(ref):
     def ref_str(v):
@@ -108,11 +108,11 @@ def main(args):
     try:
       ref.text()
       # verse, multiple verses or one chapter
-      print format_lines(ref) if one_per_line else format_block(ref)
+      print(format_lines(ref) if one_per_line else format_block(ref))
     except Exception as e:
-      print e
+      print(e)
       # book or chapters
-      print "Setting context to:", ref.pretty()
+      print("Setting context to:", ref.pretty())
       del context[1:]
       context[0] = ref
 
@@ -125,32 +125,32 @@ def main(args):
 
   # REPL Loop.
   while True:
-    print "---"
-    raw_query = raw_input("> ")
+    print("---")
+    raw_query = input("> ")
     for query in tokenize_query(raw_query):
       if query in resources:
         cur_resource = resources.get(query)
-        print "Setting resource to:", cur_resname()
+        print("Setting resource to:", cur_resname())
         context = [cur_resource.top_reference()]
       elif query in BOOK_GROUPS:
         context = [cur_resource.reference(b) for b in BOOK_GROUPS.get(query)]
-        print "Setting resource to:", context_str()
+        print("Setting resource to:", context_str())
       elif query in ('help', '?'):
-        print "Valid input: <resource|refernce|book or group to scope|search> or format <lines|block>"
+        print("Valid input: <resource|refernce|book or group to scope|search> or format <lines|block>")
       elif query.startswith("format"):
         if query == "format lines":
           one_per_line = True
         elif query == "format block":
           one_per_line = False
         else:
-          print "Say 'format lines' or 'format block'"
+          print("Say 'format lines' or 'format block'")
       elif len(query.strip()):
         try:
           ref = cur_resource.reference(query)
           display_one_ref(ref)
-          print
+          print()
         except Exception as e:
-          print e
+          print(e)
           search(raw_query)
 
 if __name__ == "__main__":

@@ -125,7 +125,7 @@ class Reference(object):
         pass
     return None
 
-  def next(self):
+  def __next__(self):
     """ Return reference for next or None.
         For this, subclasses must have called Reference's ctor.
     """
@@ -158,7 +158,7 @@ class Reference(object):
   def __str__(self):
     return "%s:%s" % (type(self), self.pretty())
 
-  def __nonzero__(self):
+  def __bool__(self):
     """ Don't want evaluation based on len(). """
     return 1
 

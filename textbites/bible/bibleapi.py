@@ -4,7 +4,7 @@ Clean, single interface to Bible code, of what used to reside in
 another project.
 """
 import os.path
-import data
+from . import data
 
 
 def bible_file(name):
@@ -27,7 +27,7 @@ def abbrToName(abbr):
   if not abbr: return abbr
   # strip all strings
   abbr = abbr.lower().replace(" ", "")
-  if data.BIBLE_ABBR_MAP.has_key(abbr):
+  if abbr in data.BIBLE_ABBR_MAP:
     book = data.BIBLE_ABBR_MAP[abbr]
     #log.debug("sucessfully mapped '" + abbr + "' -> '" + book + "'")
     return book

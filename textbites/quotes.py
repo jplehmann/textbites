@@ -7,7 +7,7 @@ Quotes are arranged by a top level which is the speaker name and then the quotes
 import re
 import logging
 
-from api import Reference, Resource, UnparsableReferenceError, InvalidReferenceError, Index
+from .api import Reference, Resource, UnparsableReferenceError, InvalidReferenceError, Index
 from .utils import *
 from collections import defaultdict
 import json
@@ -53,7 +53,7 @@ class QuotesResource(Resource, ReferenceImpl):
     # build data
     people = []
     res_index = 0
-    for person, data in quote_dict.items():
+    for person, data in list(quote_dict.items()):
       res_index += 1
       quotes = []
       for qnum, quote_pair in enumerate(data, 1):

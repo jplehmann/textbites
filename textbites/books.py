@@ -21,7 +21,7 @@ Restrictions:
 """
 import re
 
-from api import Reference, Resource, UnparsableReferenceError, InvalidReferenceError
+from .api import Reference, Resource, UnparsableReferenceError, InvalidReferenceError
 from .utils import *
 import json
 

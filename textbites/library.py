@@ -51,7 +51,7 @@ def dynamically_load_dir(dirname):
   """ Load resources in given directory based on suffix.
   """
   for f in os.listdir(dirname):
-    print f
+    print(f)
     datafile = os.path.join(dirname, f)
 
     # don't load files staring with underscore
@@ -59,9 +59,9 @@ def dynamically_load_dir(dirname):
       continue
 
     if not load(datafile):
-      print "Unknown resource format for file:", f
+      print("Unknown resource format for file:", f)
 
-  print "Dynamically loaded library of:", _resources.keys()
+  print("Dynamically loaded library of:", list(_resources.keys()))
 
 
 # TODO Move this somewhere!!
